@@ -1,0 +1,12 @@
+[package]
+name        = "hello_world"
+description = "DevKit DOL RS — Hello World example for GameCube"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[dependencies]
+gc-rt   = { path = "../../crates/gc-rt" }
+gc-hal  = { path = "../../crates/gc-hal" }
+gc-gfx  = { path = "../../crates/gc-gfx" }

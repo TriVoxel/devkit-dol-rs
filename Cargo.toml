@@ -1,0 +1,30 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "crates/gc-rt",
+    "crates/gc-hal",
+    "crates/gc-gfx",
+    "crates/gc-alloc",
+    "tools/elf2dol",
+    "tools/cargo-gc",
+    "examples/hello_world",
+]
+
+[workspace.package]
+version      = "0.1.0"
+authors      = ["devkit-dol-rs contributors"]
+edition      = "2021"
+license      = "MIT OR Apache-2.0"
+repository   = "https://github.com/your-org/devkit-dol-rs"
+
+[profile.release]
+opt-level  = 2
+debug      = false
+lto        = true
+panic      = "abort"
+codegen-units = 1
+
+[profile.dev]
+opt-level  = 1        # At least -O1; bare metal + cache sensitivity warrants it
+panic      = "abort"

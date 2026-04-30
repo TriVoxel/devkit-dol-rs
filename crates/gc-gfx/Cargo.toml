@@ -1,0 +1,15 @@
+[package]
+name        = "gc-gfx"
+description = "GameCube framebuffer graphics: XFB management, text console, 2D drawing"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[dependencies]
+gc-rt  = { path = "../gc-rt" }
+gc-hal = { path = "../gc-hal" }
+
+[features]
+default = []
+wii = ["gc-hal/wii", "gc-rt/wii"]

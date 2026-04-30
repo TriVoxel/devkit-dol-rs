@@ -1,0 +1,10 @@
+[package]
+name        = "gc-alloc"
+description = "GameCube/Wii heap allocator: linked-list allocator over MEM1"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[dependencies]
+gc-rt = { path = "../gc-rt" }

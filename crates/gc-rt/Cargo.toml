@@ -1,0 +1,16 @@
+[package]
+name        = "gc-rt"
+description = "GameCube/Wii bare-metal runtime: boot vector, exception table, cache ops, BSS init"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+# This crate is a no_std library that provides the _start entry point.
+# It has no external dependencies — only core.
+[dependencies]
+
+[features]
+default = []
+# Enable Wii-specific boot sequence (Broadway CPU, MEM2 mapping, etc.)
+wii = []

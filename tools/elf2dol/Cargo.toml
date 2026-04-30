@@ -1,0 +1,14 @@
+[package]
+name        = "elf2dol"
+description = "Convert a PowerPC ELF binary to Nintendo GameCube DOL format"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+# This is a host tool — it runs on your development machine, not the GameCube.
+# It does NOT use no_std.
+
+[[bin]]
+name = "elf2dol"
+path = "src/main.rs"
