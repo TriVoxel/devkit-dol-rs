@@ -1,140 +1,144 @@
 # DevKit DOL RS — Work In Progress
 
-This document is the living tracker for devkit-dol-rs. It records what is done,
-what is in progress, what is stubbed, and what the next priorities are.
+## Milestone 0 — Scaffold + hello_world ✅
+
+- [x] Workspace layout (gc-rt, gc-hal, gc-gfx, gc-alloc, elf2dol)
+- [x] `powerpc-gekko-eabi.json` custom target spec
+- [x] `link/gcn.ld` linker script (MEM1 layout, stack, heap symbols)
+- [x] `_start` boot assembly: BATs via rfi trick, GPR clear, FPU+PS enable,
+      HID0 cache enable, BSS zero → `main`
+- [x] `gc-hal::vi` — NTSC 480i init, set_framebuffer, flush
+- [x] `gc-gfx` — Xfb, YcbcrPair, 8×8 bitmap font, Console (scrolling)
+- [x] `elf2dol` — pure Rust ELF→DOL converter
+- [x] `hello_world` example — boots in Dolphin, prints colored text
 
 ---
 
-## ✅ Milestone 0 — Project Scaffold (CURRENT)
+## Milestone 1 — Runtime Foundation ✅
 
-- [x] Repository structure and workspace `Cargo.toml`
-- [x] Custom Rust target spec (`powerpc-gekko-eabi.json`)
-- [x] Linker script (`link/gcn.ld`) — memory layout for GameCube DOLs
-- [x] `gc-rt`: boot assembly (`_start`, BAT init, cache init, BSS clear)
-- [x] `gc-rt`: panic handler
-- [x] `gc-hal::vi`: VI register definitions and NTSC 480i init sequence
-- [x] `gc-hal::vi`: framebuffer address programming
-- [x] `gc-gfx`: XFB framebuffer abstraction (YCbCr 4:2:2)
-- [x] `gc-gfx`: 8×8 bitmap font (full printable ASCII)
-- [x] `gc-gfx`: text console (putchar, print_str, newline, scroll)
-- [x] `elf2dol`: ELF → DOL format conversion tool
-- [x] `examples/hello_world`: boots, prints text to screen, loops
-- [x] README.md, WIP.md, per-crate TODO.md files
+### gc-rt additions
+- [x] `irq.rs` — `IrqState`, `disable()`, `restore()`, `enable()`, `free()`
+- [x] `timer.rs` — `DEC_60HZ_GC`, `init()`, `ticks()`, `millis()`,
+      `tbr()`, `tbr64()`, `delay_ms()`, `delay_us()`
+- [x] `exception.rs` — Full implementation:
+  - 15 exception vector stubs (6-instruction absolute-branch pattern)
+  - Written at runtime via uncached BAT1 mirror (0xC0000xxx)
+  - `icbi` + `isync` cache flush after installation
+  - `__exc_entry` (global_asm!) — saves 192-byte `ExcCtx` (all GPRs +
+    SRR0/1 + CR/LR/CTR/XER/DAR/DSISR), calls `__exc_rust_dispatch`,
+    restores and `rfi`
+  - `ExcCtx` struct (192 bytes, 32-byte aligned, fixed offsets)
+  - `Exception` enum (15 variants, hardware vector offsets as values)
+  - `HANDLERS[15]` table — `register()` / `unregister()`
+  - `__EXC_STACK_TOP` — 16 KB dedicated exception stack
+  - Decrementer auto-ticks timer from `__exc_rust_dispatch`
 
-**Goal:** A DOL that boots in Dolphin and prints "Hello, GameCube!" to the screen.
+### gc-alloc
+- [x] Linked-list first-fit allocator over `__heap_start`…`__heap_end`
+  - 32-byte aligned headers (cache-line granularity)
+  - First-fit allocation with block splitting
+  - Address-sorted free list with coalescence
+  - IRQ-safe via `gc_rt::irq::free`
+  - `GcAllocator` implements `GlobalAlloc`; `pub static ALLOCATOR`
+  - `init()` call required in `main()` before first allocation
 
----
-
-## 🟡 Milestone 1 — Solid Runtime
-
-- [ ] `gc-rt`: Full exception vector table (DSI, ISI, EXT, ALIGN, PROG, FP, DEC, SYS, TRACE, PERF, IABR, SMI, ThermalMgmt)
-- [ ] `gc-rt`: Exception handler dispatch to Rust closures / function pointers
-- [ ] `gc-rt`: Decrementer interrupt (timer tick)
-- [ ] `gc-rt`: Thread-safe critical sections (IRQ mask/restore)
-- [ ] `gc-alloc`: Linked-list allocator over MEM1 heap region
-- [ ] `gc-alloc`: `GlobalAllocator` impl + `#[global_allocator]` export
-- [ ] `gc-hal::pi`: Processor Interface — interrupt enable/disable, reset button
-- [ ] `.cargo/config.toml`: Finalize build flags and target path resolution
-- [ ] Verify zero-BSS init is correct (check in Dolphin memory viewer)
-- [ ] Verify cache flush before/after framebuffer write
-
----
-
-## 🔴 Milestone 2 — Input (Controllers)
-
-- [ ] `gc-hal::si`: Serial Interface register map
-- [ ] `gc-hal::si`: SI poll — read 4-button GameCube controller state
-- [ ] `gc-hal::si`: SI command/response protocol (GC pad, keyboard, steering wheel)
-- [ ] High-level `Pad` type: buttons, sticks, triggers, rumble
-- [ ] Example: `controller_test` — display pad state on screen
+### gc-hal::pi
+- [x] All 27 interrupt source bitmasks (`IM_MEM0` … `IM_PI_HSP`)
+- [x] `init()`, `pending()`, `mask()`, `unmask_irq()`, `mask_irq()`,
+      `clear_irq()`, `reset_button_down()`
 
 ---
 
-## 🔴 Milestone 3 — Video (GX GPU)
+## Milestone 2 — Controller Input ✅
 
-- [ ] `gc-hal::gx`: GX FIFO setup (CPU FIFO, write-gather pipe)
-- [ ] `gc-hal::gx`: GX state initialization (`GXInit`-equivalent)
-- [ ] `gc-hal::gx`: Vertex format definitions (VTXFMT registers)
-- [ ] `gc-hal::gx`: Load projection / model-view matrices via GX registers
-- [ ] `gc-hal::gx`: Draw quads, tris, line strips via FIFO commands
-- [ ] `gc-hal::gx`: Texture object upload (TMEM)
-- [ ] `gc-hal::gx`: EFB → XFB copy (`GXCopyDisp`)
-- [ ] `gc-gfx`: GPU-accelerated 2D drawing (rects, sprites) via GX
-- [ ] Example: `triangle` — rotating colored triangle via GX
+### gc-hal::si
+- [x] Synchronous single-pad read via SICOMCSR immediate transfer
+- [x] `Port` enum (P1–P4)
+- [x] `Buttons` module (DLeft/Right/Up/Down, A/B/X/Y/Z, L/R, Start)
+- [x] `PadState` — buttons, stick X/Y, C-stick X/Y, trigger L/R
+  - `.pressed(button)`, `.stick_x_centered()` etc.
+- [x] `PadResult` — `Ok(PadState)` / `NoController` / `Error`
+- [x] `read_pad(port)` — single blocking poll
+- [x] `read_all()` — poll all four ports at once
+- [x] SPEC5 button + analog decode (matches libogc2 SPEC2_MakeStatus)
 
----
-
-## 🔴 Milestone 4 — Audio
-
-- [ ] `gc-hal::dsp`: DSP bootstrap / DROM upload
-- [ ] `gc-hal::dsp`: DSP mailbox protocol (read/write)
-- [ ] `gc-hal::ai`: Audio Interface register map (sample rate, DMA)
-- [ ] `gc-hal::ai`: Streaming audio via ARAM DMA
-- [ ] High-level `AudioBuffer` type (stereo 16-bit PCM)
-- [ ] Example: `sine_wave` — generate and output a 440Hz sine tone
+### examples/controller_test
+- [x] Reads all four ports every frame
+- [x] Live display: button names highlighted when pressed, analog values,
+      trigger fill-bar visualization
+- [x] ~60 Hz update loop via `timer::delay_ms(16)`
 
 ---
 
-## 🔴 Milestone 5 — Storage
+## Milestone 3 — GX GPU Basics 🔴
 
-- [ ] `gc-hal::exi`: EXI bus register map and transfer protocol
-- [ ] `gc-hal::exi`: Memory card (slot A/B) low-level I/O
-- [ ] `gc-hal::exi`: SD Gecko adapter support
-- [ ] `gc-hal::dvd`: DVD drive command interface (read sectors)
-- [ ] FAT filesystem layer (via `embedded-sdmmc` or custom)
-- [ ] Example: `file_browser` — list files on SD card
-
----
-
-## 🔴 Milestone 6 — Networking (GameCube)
-
-- [ ] `gc-hal::exi`: Broadband Adapter (BBA) detection
-- [ ] TCP/IP stack integration (port `smoltcp`)
-- [ ] UDP socket example: `wiiload`-compatible listener
-- [ ] `cargo-gc run --net` — push DOL over network to running GC
+- [ ] GX FIFO ring buffer setup (0xCC008000)
+- [ ] Command processor initialization
+- [ ] Basic vertex submission (position + color)
+- [ ] Projection / modelview matrix upload (XF)
+- [ ] Textured quad drawing
+- [ ] `gc-gfx`: upgrade from CPU-drawn XFB console to GX pipeline
 
 ---
 
-## 🔴 Milestone 7 — Wii Support
+## Milestone 4 — Audio 🔴
 
-- [ ] Feature flag `wii` to gate Broadway-specific code
-- [ ] `targets/powerpc-broadway-eabi.json` target spec
-- [ ] Wii-specific BAT config (MEM2 mapping)
-- [ ] IPC (inter-processor communication) with Starlet (ARM9)
-- [ ] `gc-hal::wpad`: Wii Remote (via BT stack)
-- [ ] `gc-hal::ios`: IOS ioctl interface (Wii system services)
-- [ ] Example: `wii_hello` — runs on Wii hardware
+- [ ] `gc-hal::ai` — stream 16-bit stereo PCM at 32 kHz / 48 kHz
+- [ ] `gc-hal::dsp` — DSP mailbox, ARAM DMA
+- [ ] Simple sine-wave test tone example
 
 ---
 
-## 🔴 Milestone 8 — cargo-gc Tooling
+## Milestone 5 — Storage 🔴
 
-- [ ] `cargo gc build` — wraps `cargo build` with correct flags
-- [ ] `cargo gc run --dolphin` — build + convert + launch Dolphin
-- [ ] `cargo gc run --net` — build + push over network (wiiload protocol)
-- [ ] `cargo gc new` — project template generator
-- [ ] `cargo gc check` — lint + size report
+- [ ] `gc-hal::exi` — EXI bus protocol (SPI-like, 3 channels)
+- [ ] Memory card read/write (EXI channel 0/1)
+- [ ] SD adapter read (EXI channel 0, SDIO protocol)
+- [ ] Simple file abstraction
 
 ---
 
-## Notes & Known Issues
+## Milestone 6 — DVD 🔴
 
-- **Target spec `cpu` field**: LLVM uses `"750"` for the Gekko. Paired Singles (PS)
-  instructions are a Gekko extension not in upstream LLVM; if PS intrinsics are needed,
-  they'll be emitted via `global_asm!` or a custom LLVM patch.
+- [ ] `gc-hal::dvd` — drive spin-up, seek, sector read
+- [ ] Async read via DI interrupt
+- [ ] Simple asset loading example
 
-- **Cache coherency**: The XFB is accessed by the VI hardware (which reads from physical
-  RAM). After writing pixels via the CPU cache, `dcbf` (data cache block flush) must be
-  called on each modified cache line before the VI reads it. This is currently done with
-  a bulk flush in `gc-gfx` but should be tracked more carefully.
+---
 
-- **Linker script**: `link/gcn.ld` places `.crt0` first so `_start` is at the DOL entry
-  point. The DOL header stores this entry address and the IPL jumps to it.
+## Milestone 7 — Wii Extensions 🔴
 
-- **No `std` / no allocator yet**: The hello_world example is fully `no_std` with no
-  dynamic allocation. Milestone 1 adds the heap allocator, which will unblock `alloc`
-  usage.
+- [ ] Broadway CPU target (same ISA, higher clocks)
+- [ ] Wii BAT configuration differences
+- [ ] `gc-hal::exi` Wii variant (IOS/AHBPROT bypass not required for homebrew)
+- [ ] Wiimote via Bluetooth (HCI stack, long-term goal)
 
-- **`elf2dol` maturity**: The current implementation handles simple DOLs (one text
-  section, one data section). Complex memory layouts with multiple BSS sections or
-  large TLS regions may need further work.
+---
+
+## Milestone 8 — cargo-gc Tooling 🔴
+
+- [ ] `cargo gc build` — wraps the nightly invocation
+- [ ] `cargo gc run` — build + elf2dol + launch Dolphin
+- [ ] `cargo gc dol` — just the ELF→DOL conversion step
+- [ ] Config in `Cargo.toml` `[package.metadata.gc]`
+
+---
+
+## Build Reference
+
+```sh
+# Build an example
+cargo +nightly build \
+  -Z build-std=core,compiler_builtins \
+  -Z build-std-features=compiler-builtins-mem \
+  --target targets/powerpc-gekko-eabi.json \
+  -p hello_world --release
+
+# Convert to DOL
+cargo run -p elf2dol -- \
+  target/powerpc-gekko-eabi/release/hello_world \
+  hello_world.dol
+
+# Run in Dolphin
+dolphin-emu -e hello_world.dol
+```

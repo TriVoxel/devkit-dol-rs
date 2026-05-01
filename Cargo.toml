@@ -9,6 +9,7 @@ members = [
     "tools/elf2dol",
     "tools/cargo-gc",
     "examples/hello_world",
+    "examples/controller_test",
 ]
 
 [workspace.package]

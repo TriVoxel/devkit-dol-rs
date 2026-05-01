@@ -1,27 +1,26 @@
 //! # gc-hal — GameCube/Wii Hardware Abstraction Layer
 //!
-//! Safe, idiomatic Rust interfaces to the GameCube and Wii hardware subsystems.
+//! Idiomatic Rust interfaces to GC/Wii hardware subsystems.
 //!
-//! ## Subsystems
-//!
-//! | Module | Hardware       | Status       |
-//! |--------|----------------|--------------|
-//! | `vi`   | Video Interface| 🟡 WIP       |
-//! | `gx`   | Graphics (GX)  | 🔴 Stub      |
-//! | `si`   | Serial Interface (controllers) | 🔴 Stub |
-//! | `exi`  | External Interface (memory card, SD) | 🔴 Stub |
-//! | `dsp`  | Audio DSP      | 🔴 Stub      |
-//! | `ai`   | Audio Interface | 🔴 Stub     |
-//! | `dvd`  | DVD Drive      | 🔴 Stub      |
-//! | `pi`   | Processor Interface (interrupts) | 🔴 Stub |
+//! | Module | Hardware                            | Status        |
+//! |--------|-------------------------------------|---------------|
+//! | `vi`   | Video Interface                     | ✅ NTSC/PAL   |
+//! | `pi`   | Processor Interface (interrupts)    | ✅ Complete   |
+//! | `si`   | Serial Interface (controllers)      | ✅ Sync poll  |
+//! | `gx`   | Graphics (GX FIFO)                  | 🔴 Stub       |
+//! | `exi`  | External Interface (memcard, SD)    | 🔴 Stub       |
+//! | `dsp`  | Audio DSP                           | 🔴 Stub       |
+//! | `ai`   | Audio Interface (streaming)         | 🔴 Stub       |
+//! | `dvd`  | DVD Drive                           | 🔴 Stub       |
 
 #![no_std]
+#![feature(asm_experimental_arch)]
 
-pub mod vi;
-pub mod gx;
-pub mod si;
-pub mod exi;
-pub mod dsp;
 pub mod ai;
+pub mod dsp;
 pub mod dvd;
+pub mod exi;
+pub mod gx;
 pub mod pi;
+pub mod si;
+pub mod vi;
