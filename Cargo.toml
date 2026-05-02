@@ -10,6 +10,7 @@ members = [
     "tools/cargo-gc",
     "examples/hello_world",
     "examples/controller_test",
+    "examples/spinning_triangle",
 ]
 
 [workspace.package]

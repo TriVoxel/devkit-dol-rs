@@ -70,7 +70,7 @@
 
 ---
 
-## Milestone 3 — GX GPU Basics 🔴
+## Milestone 3 — GX GPU Basics ✅
 
 - [ ] GX FIFO ring buffer setup (0xCC008000)
 - [ ] Command processor initialization
