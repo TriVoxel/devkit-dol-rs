@@ -13,6 +13,7 @@ members = [
     "examples/spinning_triangle",
     "examples/sine_wave",
     "examples/sd_reader",
+    "examples/storage_detect",
 ]
 
 [workspace.package]

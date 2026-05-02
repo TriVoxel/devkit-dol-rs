@@ -65,18 +65,24 @@ pub type Result<T> = core::result::Result<T, SdError>;
 
 // ─── Slot selection ───────────────────────────────────────────────────────────
 
-/// Which memory card slot the SD Gecko is in.
+/// Which slot the SD Gecko / SD2SP2 adapter is connected to.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Slot {
-    /// Memory card slot A — EXI channel 0, device 0
+    /// Memory card slot A — EXI channel 0, device 0 (SD Gecko)
     A,
-    /// Memory card slot B — EXI channel 1, device 0
+    /// Memory card slot B — EXI channel 1, device 0 (SD Gecko)
     B,
+    /// Serial Port 2 (bottom of console) — EXI channel 2, device 0 (SD2SP2)
+    Sp2,
 }
 
 impl Slot {
     fn channel(self) -> Channel {
-        match self { Slot::A => Channel::Ch0, Slot::B => Channel::Ch1 }
+        match self {
+            Slot::A   => Channel::Ch0,
+            Slot::B   => Channel::Ch1,
+            Slot::Sp2 => Channel::Ch2,
+        }
     }
 }
 
