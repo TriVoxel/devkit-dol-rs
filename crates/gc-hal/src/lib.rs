@@ -2,16 +2,16 @@
 //!
 //! Idiomatic Rust interfaces to GC/Wii hardware subsystems.
 //!
-//! | Module | Hardware                            | Status        |
-//! |--------|-------------------------------------|---------------|
-//! | `vi`   | Video Interface                     | ✅ NTSC/PAL   |
-//! | `pi`   | Processor Interface (interrupts)    | ✅ Complete   |
-//! | `si`   | Serial Interface (controllers)      | ✅ Sync poll  |
-//! | `gx`   | Graphics (GX FIFO)                  | 🔴 Stub       |
-//! | `exi`  | External Interface (memcard, SD)    | 🔴 Stub       |
-//! | `dsp`  | Audio DSP                           | 🔴 Stub       |
-//! | `ai`   | Audio Interface (streaming)         | 🔴 Stub       |
-//! | `dvd`  | DVD Drive                           | 🔴 Stub       |
+//! | Module | Hardware                            | Status              |
+//! |--------|-------------------------------------|---------------------|
+//! | `vi`   | Video Interface                     | ✅ NTSC/PAL         |
+//! | `pi`   | Processor Interface (interrupts)    | ✅ Complete         |
+//! | `si`   | Serial Interface (controllers)      | ✅ Sync poll        |
+//! | `gx`   | Graphics (GX FIFO)                  | ✅ 3D pipeline      |
+//! | `ai`   | Audio Interface (DMA streaming)     | ✅ DMA + callback   |
+//! | `dsp`  | Audio DSP (mailbox, control)        | ✅ Reset + mailbox  |
+//! | `exi`  | External Interface (memcard, SD)    | ✅ Imm + DMA        |
+//! | `dvd`  | DVD Drive                           | 🔴 Stub             |
 
 #![no_std]
 #![feature(asm_experimental_arch)]

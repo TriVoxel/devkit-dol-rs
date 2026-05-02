@@ -11,6 +11,7 @@ members = [
     "examples/hello_world",
     "examples/controller_test",
     "examples/spinning_triangle",
+    "examples/sine_wave",
 ]
 
 [workspace.package]
