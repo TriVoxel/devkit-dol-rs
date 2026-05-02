@@ -19,7 +19,7 @@
 //! ## Features
 //!
 //! - `wii`: Switch MMIO prefix from `0xCC` to `0xCD` and expose MEM2 constants.
-//!   Activate with `cargo gc build --wii` or add to your `Cargo.toml`:
+//!   Activate with `cargo dkdol build --wii` or add to your `Cargo.toml`:
 //!   ```toml
 //!   [dependencies.gc-hal]
 //!   features = ["wii"]

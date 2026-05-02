@@ -1,4 +1,4 @@
-//! # storage_detect — DevKit DOL RS
+//! # storage_detect — DevKit DOL
 //!
 //! Scans all storage devices and displays what's found:
 //!
@@ -86,7 +86,7 @@ unsafe fn run() -> ! {
 
     // ── Header ────────────────────────────────────────────────────────────
     con.set_fg(color::CYAN);
-    con.print_str("\n  DevKit DOL RS -- Storage Device Scanner\n");
+    con.print_str("\n  DevKit DOL -- Storage Device Scanner\n");
     con.set_fg(color::DARK_GREY);
     con.print_str("  ──────────────────────────────────────────────\n\n");
     con.set_fg(color::YELLOW);

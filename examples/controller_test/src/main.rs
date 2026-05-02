@@ -1,4 +1,4 @@
-//! # controller_test — DevKit DOL RS
+//! # controller_test — DevKit DOL
 //!
 //! Reads all four controller ports every frame and displays live pad state
 //! on screen: button names, stick values, and trigger depths.
@@ -71,7 +71,7 @@ unsafe fn run() -> ! {
 
         // ── Header ───────────────────────────────────────────────────
         con.set_fg(cyan);
-        con.print_str("\n  DevKit DOL RS -- Controller Test\n");
+        con.print_str("\n  DevKit DOL -- Controller Test\n");
         con.set_fg(grey);
         con.print_str("  ──────────────────────────────────────────────────\n\n");
 

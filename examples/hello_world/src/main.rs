@@ -1,4 +1,4 @@
-//! # Hello World — DevKit DOL RS
+//! # Hello World — DevKit DOL
 //!
 //! Boots on GameCube (or Dolphin), initialises NTSC 480i video, and prints
 //! "Hello, GameCube!" to the screen using the framebuffer text console.
@@ -85,7 +85,7 @@ unsafe fn run() -> ! {
     // Banner
     con.print_str("\n");
     con.print_str("  ====================================\n");
-    con.print_str("   DevKit DOL RS  --  Hello, World!\n");
+    con.print_str("   DevKit DOL  --  Hello, World!\n");
     con.print_str("  ====================================\n");
     con.print_str("\n");
 

@@ -1,0 +1,13 @@
+[package]
+name        = "cargo-dkdol"
+description = "cargo dkdol — build, convert, and launch GameCube homebrew"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[[bin]]
+name = "cargo-dkdol"
+path = "src/main.rs"
+
+# No external dependencies — pure std

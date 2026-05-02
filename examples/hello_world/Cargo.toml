@@ -1,6 +1,6 @@
 [package]
 name        = "hello_world"
-description = "DevKit DOL RS — Hello World example for GameCube"
+description = "DevKit DOL — Hello World example for GameCube"
 version.workspace    = true
 authors.workspace    = true
 edition.workspace    = true

@@ -1,4 +1,4 @@
-//! # sd_reader — DevKit DOL RS
+//! # sd_reader — DevKit DOL
 //!
 //! Demonstrates reading from an SD card inserted in a SD Gecko adapter in
 //! memory card slot A. Reads the first sector (MBR / boot sector) and
@@ -77,7 +77,7 @@ unsafe fn run() -> ! {
 
     // ── Header ────────────────────────────────────────────────────────────
     con.set_fg(color::CYAN);
-    con.print_str("\n  DevKit DOL RS -- SD Card Reader\n");
+    con.print_str("\n  DevKit DOL -- SD Card Reader\n");
     con.set_fg(color::DARK_GREY);
     con.print_str("  ────────────────────────────────────────────\n\n");
 

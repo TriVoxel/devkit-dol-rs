@@ -1,4 +1,4 @@
-# DevKit DOL RS
+# DevKit DOL
 
 **A pure-Rust devkit for Nintendo GameCube and Wii homebrew development.**
 
@@ -19,7 +19,7 @@ to hardware register access is written in Rust targeting the PowerPC 750CXe
 | 4         | Audio (AI DMA, DSP mailbox, EXI bus)          | ✅     |
 | 5         | All storage (SD/SP2/MemCard/DVD/ODE)          | ✅     |
 | 6         | Wii extensions (Broadway, MEM2, MMIO switch)  | ✅     |
-| 7         | `cargo-gc` tooling                            | ✅     |
+| 7         | `cargo-dkdol` tooling                            | ✅     |
 
 ---
 
@@ -27,17 +27,17 @@ to hardware register access is written in Rust targeting the PowerPC 750CXe
 
 ```sh
 # Install the build tool
-cargo install --path tools/cargo-gc
+cargo install --path tools/cargo-dkdol
 
 # Run an example on GameCube
-cargo gc run --release --example spinning_triangle
+cargo dkdol run --release --example spinning_triangle
 
 # Run an example on Wii
-cargo gc run --release --example hello_world --wii
+cargo dkdol run --release --example hello_world --wii
 
 # Create a new project
-cargo gc new my_game && cd my_game
-cargo gc run --release --example hello
+cargo dkdol new my_game && cd my_game
+cargo dkdol run --release --example hello
 ```
 
 ---
@@ -51,7 +51,7 @@ cargo gc run --release --example hello
 | `gc-gfx`    | XFB framebuffer, YCbCr helpers, 8×8 font, text console     | ✅     |
 | `gc-alloc`  | `GlobalAllocator` — first-fit linked-list over MEM1/MEM2   | ✅     |
 | `elf2dol`   | Host tool: ELF → DOL converter                             | ✅     |
-| `cargo-gc`  | `cargo gc build/run/dol/new` subcommand                    | ✅     |
+| `cargo-dkdol`  | `cargo dkdol build/run/dol/new` subcommand                    | ✅     |
 
 ---
 
@@ -74,7 +74,7 @@ cargo gc run --release --example hello
 | `mem2`    | Wii MEM2 (64 MB extended RAM)     | —   | ✅   |
 
 All hardware modules switch MMIO prefix automatically when built
-with `--features gc-hal/wii` (or `cargo gc build --wii`).
+with `--features gc-hal/wii` (or `cargo dkdol build --wii`).
 
 ---
 
@@ -110,23 +110,23 @@ with `--features gc-hal/wii` (or `cargo gc build --wii`).
 
 ---
 
-## cargo-gc subcommands
+## cargo-dkdol subcommands
 
 ```
-cargo gc build [--release] [-p <pkg>] [--example <name>] [--wii]
+cargo dkdol build [--release] [-p <pkg>] [--example <name>] [--wii]
     Cross-compile and convert ELF → DOL.
 
-cargo gc dol <elf> [output.dol]
+cargo dkdol dol <elf> [output.dol]
     Convert an existing ELF binary to DOL format.
 
-cargo gc run [--release] [-p <pkg>] [--example <name>]
+cargo dkdol run [--release] [-p <pkg>] [--example <name>]
             [--dolphin <path>] [--wii]
     Build, convert, then launch in Dolphin Emulator.
 
-cargo gc new <project-name>
+cargo dkdol new <project-name>
     Scaffold a complete new GC/Wii project.
 
-cargo gc help [<subcommand>]
+cargo dkdol help [<subcommand>]
     Detailed help.
 ```
 

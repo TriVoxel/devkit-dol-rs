@@ -7,7 +7,7 @@ members = [
     "crates/gc-gfx",
     "crates/gc-alloc",
     "tools/elf2dol",
-    "tools/cargo-gc",
+    "tools/cargo-dkdol",
     "examples/hello_world",
     "examples/controller_test",
     "examples/spinning_triangle",
@@ -20,10 +20,10 @@ members = [
 
 [workspace.package]
 version      = "0.1.0"
-authors      = ["devkit-dol-rs contributors"]
+authors      = ["devkit-dol contributors"]
 edition      = "2021"
 license      = "MIT OR Apache-2.0"
-repository   = "https://github.com/your-org/devkit-dol-rs"
+repository   = "https://github.com/your-org/devkit-dol"
 
 [profile.release]
 opt-level  = 2

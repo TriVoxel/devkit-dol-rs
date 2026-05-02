@@ -1,4 +1,4 @@
-//! # sine_wave — DevKit DOL RS
+//! # sine_wave — DevKit DOL
 //!
 //! Generates a 440 Hz stereo sine wave and plays it continuously through
 //! the GameCube's Audio Interface DMA at 32 kHz. Displays audio status on
@@ -125,7 +125,7 @@ unsafe fn run() -> ! {
         con.set_bg(bg);
 
         con.set_fg(color::CYAN);
-        con.print_str("\n  DevKit DOL RS -- Sine Wave Demo\n");
+        con.print_str("\n  DevKit DOL -- Sine Wave Demo\n");
         con.set_fg(color::DARK_GREY);
         con.print_str("  ─────────────────────────────────────\n\n");
 

@@ -1,8 +1,8 @@
-# DevKit DOL RS — Work In Progress
+# DevKit DOL — Work In Progress
 
 ## Milestone 0 — Scaffold ✅ | 1 — Runtime ✅ | 2 — Controllers ✅
 ## Milestone 3 — GX GPU ✅ | 4 — Audio ✅ | 5 — Storage ✅
-## Milestone 6 — Wii Extensions ✅ | 7 — cargo-gc ✅
+## Milestone 6 — Wii Extensions ✅ | 7 — cargo-dkdol ✅
 
 ---
 

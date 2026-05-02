@@ -32,5 +32,5 @@ section layout, and special symbols used by `gc-rt` and the hardware drivers.
   to that address. An alternative is to place them in the linker script as
   `AT(0x80000100)`. The runtime approach is currently preferred for simplicity.
 
-- [ ] **Map file output** — Add `--Map=output.map` to linker flags in `cargo-gc`
+- [ ] **Map file output** — Add `--Map=output.map` to linker flags in `cargo-dkdol`
   so developers can inspect section sizes and symbol addresses.

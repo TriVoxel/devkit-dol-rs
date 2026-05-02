@@ -1,4 +1,4 @@
-//! # spinning_triangle — DevKit DOL RS
+//! # spinning_triangle — DevKit DOL
 //!
 //! The classic "first 3D program": a brightly coloured triangle that spins
 //! around the Y axis. Demonstrates the full GX pipeline from FIFO init to
