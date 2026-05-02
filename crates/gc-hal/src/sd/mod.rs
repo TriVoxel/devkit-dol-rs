@@ -99,6 +99,7 @@ enum CardType {
 // ─── SdCard ──────────────────────────────────────────────────────────────────
 
 /// An SD/SDHC card connected via the SD Gecko adapter.
+#[derive(Clone, Copy)]
 pub struct SdCard {
     slot: Slot,
     card_type: CardType,

@@ -1,0 +1,19 @@
+[package]
+name        = "gc-fs"
+description = "GameCube/Wii filesystem drivers: FAT32, ExFAT, EXT2, MemCard, GC-DVD, ISO9660"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[dependencies]
+gc-hal  = { path = "../gc-hal" }
+gc-rt   = { path = "../gc-rt" }
+
+[features]
+default = ["fat", "memcard", "dvd", "iso9660"]
+fat     = []   # FAT12/16/32 + ExFAT
+ext2    = []   # EXT2/3/4 read-only
+memcard = []   # Nintendo GC memory card filesystem
+dvd     = []   # GC disc filesystem (FST)
+iso9660 = []   # ISO 9660 + Rock Ridge

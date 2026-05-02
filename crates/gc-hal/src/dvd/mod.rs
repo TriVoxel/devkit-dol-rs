@@ -273,3 +273,16 @@ pub unsafe extern "C" fn __dvd_tc_handler() {
         cb(Ok(()));
     }
 }
+
+// ── DvdDisk wrapper struct ────────────────────────────────────────────────────
+
+/// A handle to the DVD drive, used as a block device by gc-fs.
+///
+/// Obtain one after a successful `dvd::init()`:
+/// ```rust,no_run
+/// unsafe {
+///     gc_hal::dvd::init();
+///     let disk = gc_hal::dvd::DvdDisk;
+/// }
+/// ```
+pub struct DvdDisk;
