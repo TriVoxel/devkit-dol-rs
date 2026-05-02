@@ -10,12 +10,12 @@
 //! | 1       | Memory Card B  | (expansion)    | —           |
 //! | 2       | RTC / IPL      | —              | —           |
 //!
-//! ## Register layout (32-bit at `0xCC006800`)
+//! ## Register layout (32-bit at `crate::mmio::addr(0x006800)`)
 //!
 //! Each channel occupies 5 × u32 registers:
 //!
 //! ```text
-//! Channel N base = 0xCC006800 + N * 20
+//! Channel N base = crate::mmio::addr(0x006800) + N * 20
 //!   +0  EXIxCSR   — Control/Status (device select, clock, interrupts)
 //!   +4  EXIxMAR   — DMA address (physical, 32-byte aligned)
 //!   +8  EXIxLEN   — DMA length (bytes)
@@ -38,7 +38,7 @@
 
 #![allow(dead_code)]
 
-const EXI_BASE: usize = 0xCC006800;
+const EXI_BASE: usize = crate::mmio::addr(0x006800);
 const CH_STRIDE: usize = 20;
 
 const REG_CSR:  usize = 0;

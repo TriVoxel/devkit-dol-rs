@@ -1,6 +1,6 @@
 [package]
 name        = "cargo-gc"
-description = "cargo gc — build, convert, and launch GameCube homebrew from the command line"
+description = "cargo gc — build, convert, and launch GameCube homebrew"
 version.workspace    = true
 authors.workspace    = true
 edition.workspace    = true
@@ -9,3 +9,5 @@ license.workspace    = true
 [[bin]]
 name = "cargo-gc"
 path = "src/main.rs"
+
+# No external dependencies — pure std

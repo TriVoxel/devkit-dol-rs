@@ -3,7 +3,7 @@
 //! The PI aggregates all hardware interrupt sources into the CPU's external
 //! interrupt line. It has two 32-bit registers:
 //!
-//! - `PI_INTSR` (0xCC003000): Interrupt source register. Each bit represents
+//! - `PI_INTSR` (crate::mmio::addr(0x003000)): Interrupt source register. Each bit represents
 //!   one hardware source. **Write 1 to clear a pending interrupt.**
 //! - `PI_INTMR` (0xCC003004): Interrupt mask register. **Write 1 to enable**
 //!   a source (so it can drive the CPU interrupt line).
@@ -40,7 +40,7 @@
 //! | 25  | PI_DEBUG    | Debug interface               |
 //! | 26  | PI_HSP      | High-speed port               |
 
-pub const PI_BASE: usize = 0xCC003000;
+pub const PI_BASE: usize = crate::mmio::addr(0x003000);
 
 #[inline(always)]
 fn pi_intsr() -> *mut u32 { PI_BASE as *mut u32 }

@@ -294,3 +294,50 @@ global_asm!(
     ".size _start, . - _start",
     ".previous",
 );
+
+// ── Wii MEM2 BAT setup ────────────────────────────────────────────────────────
+//
+// When compiled with `--features wii`, this block initialises DBAT2 and DBAT3
+// to map the Wii's 64 MB MEM2 (physical 0x10000000):
+//   DBAT2: cached   0x90000000 → 0x10000000
+//   DBAT3: uncached 0xD0000000 → 0x10000000
+//
+// These BATs run in real mode immediately after the normal BAT init sequence,
+// before address translation is re-enabled (they are placed in .crt0 after _start
+// and are reached via fall-through from __init_bats_realmode).
+//
+// On GameCube (without the wii feature) this block compiles to nothing.
+
+#[cfg(feature = "wii")]
+use core::arch::global_asm;
+
+#[cfg(feature = "wii")]
+global_asm!(
+    ".section .crt0, \"ax\", @progbits",
+    ".globl __wii_mem2_bats",
+    ".type  __wii_mem2_bats, @function",
+    "__wii_mem2_bats:",
+
+    // DBAT2: cached MEM2 — 0x90000000 → physical 0x10000000, 64 MB
+    // BL=0x07FF (64 MB - 1 blk), Vs=1, Vp=1
+    "   lis     r3, 0x9000",
+    "   ori     r3, r3, 0x07FF",         // upper: BEPI|BL|Vs|Vp
+    "   lis     r4, 0x1000",             // lower: BRPN=0x10000000
+    "   ori     r4, r4, 0x0002",         // WIMG=0000 (cached), PP=2
+    "   mtspr   540, r3",               // DBAT2U
+    "   mtspr   541, r4",               // DBAT2L
+    "   isync",
+
+    // DBAT3: uncached MEM2 — 0xD0000000 → physical 0x10000000, 64 MB
+    "   lis     r3, 0xD000",
+    "   ori     r3, r3, 0x07FF",
+    "   lis     r4, 0x1000",
+    "   ori     r4, r4, 0x002A",         // WIMG=0101 (uncached+guarded), PP=2
+    "   mtspr   542, r3",               // DBAT3U
+    "   mtspr   543, r4",               // DBAT3L
+    "   isync",
+
+    "   blr",
+    ".size __wii_mem2_bats, . - __wii_mem2_bats",
+    ".previous",
+);

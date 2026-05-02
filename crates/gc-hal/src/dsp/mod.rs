@@ -4,7 +4,7 @@
 //! on the GameCube. It handles audio decoding (ADPCM, PCM mixing) and
 //! communicates with the CPU via a pair of 32-bit mailbox registers.
 //!
-//! ## Register map (16-bit, base 0xCC005000)
+//! ## Register map (16-bit, base crate::mmio::addr(0x005000))
 //!
 //! | Index | Name       | Description                                    |
 //! |-------|------------|------------------------------------------------|
@@ -37,7 +37,7 @@
 
 use core::sync::atomic::{AtomicBool, Ordering};
 
-const DSP_BASE: usize = 0xCC005000;
+const DSP_BASE: usize = crate::mmio::addr(0x005000);
 
 // DSPCR bits
 pub const DSPCR_RES:      u16 = 0x0001;

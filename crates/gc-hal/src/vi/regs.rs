@@ -6,7 +6,7 @@
 //! BAT configuration and do not need `dcbf`.
 
 /// Physical base address of the Video Interface register block.
-const VI_BASE: usize = 0xCC00_2000;
+const VI_BASE: usize = crate::mmio::addr(0x002000);
 
 /// Number of 16-bit VI registers.
 const VI_REG_COUNT: usize = 64;

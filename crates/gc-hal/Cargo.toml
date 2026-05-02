@@ -12,3 +12,7 @@ gc-rt = { path = "../gc-rt" }
 [features]
 default = []
 wii = ["gc-rt/wii"]
+
+[features]
+default = []
+wii = ["gc-rt/wii"]

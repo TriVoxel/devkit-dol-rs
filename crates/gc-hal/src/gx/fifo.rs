@@ -25,8 +25,8 @@
 //! - `[4]`: CPU FIFO end
 //! - `[5]`: CPU FIFO write pointer
 
-pub const CP_BASE: usize = 0xCC00_0000;
-pub const PI_BASE: usize = 0xCC00_3000;
+pub const CP_BASE: usize = crate::mmio::addr(0x000000);
+pub const PI_BASE: usize = crate::mmio::addr(0x003000);
 
 /// Minimum FIFO size: 64 KB.
 pub const FIFO_MIN_SIZE: usize = 64 * 1024;

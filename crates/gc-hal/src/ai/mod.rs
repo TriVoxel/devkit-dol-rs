@@ -1,8 +1,8 @@
 //! Audio Interface (AI) — PCM streaming DMA driver.
 //!
 //! The AI feeds 16-bit signed stereo PCM samples directly from MEM1 to the
-//! DAC via DMA. The DMA engine lives in the DSP register block (0xCC005000),
-//! not in the AI register block (0xCC006C00); the AI block only controls
+//! DAC via DMA. The DMA engine lives in the DSP register block (crate::mmio::addr(0x005000)),
+//! not in the AI register block (crate::mmio::addr(0x006C00)); the AI block only controls
 //! sample rate, volume, and streaming play state.
 //!
 //! ## Two audio paths
@@ -47,8 +47,8 @@ use core::sync::atomic::{AtomicBool, Ordering};
 
 // ── Register bases ─────────────────────────────────────────────────────────
 
-const AI_BASE:  usize = 0xCC006C00; // AI control registers (32-bit)
-const DSP_BASE: usize = 0xCC005000; // DSP registers (16-bit), shared with ARAM
+const AI_BASE:  usize = crate::mmio::addr(0x006C00); // AI control registers (32-bit)
+const DSP_BASE: usize = crate::mmio::addr(0x005000); // DSP registers (16-bit), shared with ARAM
 
 // AI register indices (u32)
 const AI_CONTROL:   usize = 0;

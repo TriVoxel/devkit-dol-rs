@@ -3,7 +3,7 @@
 //! ## Hardware Overview
 //!
 //! The SI bus connects the four front controller ports. Registers are 32-bit,
-//! mapped at `0xCC006400`. Layout:
+//! mapped at `crate::mmio::addr(0x006400)`. Layout:
 //!
 //! ```text
 //! Offset  Name        Description
@@ -48,7 +48,7 @@
 
 #![allow(dead_code)]
 
-pub const SI_BASE: usize = 0xCC006400;
+pub const SI_BASE: usize = crate::mmio::addr(0x006400);
 
 // Register word indices (_siReg as *mut u32)
 const REG_C_OUT: [usize; 4] = [0, 3, 6, 9];   // channel N command word 0

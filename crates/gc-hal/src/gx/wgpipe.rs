@@ -18,7 +18,7 @@
 
 use core::arch::asm;
 
-pub const WGPIPE_ADDR: usize = 0xCC00_8000;
+pub const WGPIPE_ADDR: usize = crate::mmio::addr(0x008000);
 
 /// Enable the write-gather pipe.
 ///

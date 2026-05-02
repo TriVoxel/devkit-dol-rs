@@ -1,6 +1,6 @@
 //! DVD Interface (DI) — disc drive control and sector reading.
 //!
-//! ## Register map (32-bit, base 0xCC006000)
+//! ## Register map (32-bit, base crate::mmio::addr(0x006000))
 //!
 //! | Index | Name      | Description                                      |
 //! |-------|-----------|--------------------------------------------------|
@@ -35,7 +35,7 @@
 
 #![allow(dead_code)]
 
-const DI_BASE: usize = 0xCC006000;
+const DI_BASE: usize = crate::mmio::addr(0x006000);
 
 // Register indices (u32)
 const REG_DISR:     usize = 0;
