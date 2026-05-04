@@ -1,0 +1,10 @@
+[package]
+name = "vfs_demo"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+gc-vfs = { path = "../../crates/gc-vfs", features = ["all-fs"] }
+gc-gfx = { path = "../../crates/gc-gfx" }
+gc-hal = { path = "../../crates/gc-hal" }
+gc-rt  = { path = "../../crates/gc-rt" }

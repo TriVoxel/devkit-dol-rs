@@ -222,7 +222,7 @@ bare-metal Rust projects on non-tier-1 architectures.
 - [YAGCD — Yet Another GameCube Documentation](https://www.gc-forever.com/yagcd/)
 - [WiiBrew Wiki](https://wiibrew.org/wiki/Main_Page)
 - [Dolphin Emulator](https://dolphin-emu.org/)
-- libogc2 — reference implementation (not linked or included)
+- [libogc2](https://libogc2.org/) — reference implementation (not linked or included)
 
 ---
 

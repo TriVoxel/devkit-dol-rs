@@ -16,6 +16,8 @@ members = [
     "examples/storage_detect",
     "crates/gc-crash",
     "crates/gc-fs",
+    "crates/gc-vfs",
+    "examples/vfs_demo",
 ]
 
 [workspace.package]
