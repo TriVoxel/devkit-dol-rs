@@ -3,7 +3,7 @@
 ## What This Directory Is
 
 Linker scripts for supported platforms. Each script defines the memory map,
-section layout, and special symbols used by `gc-rt` and the hardware drivers.
+section layout, and special symbols used by `dkdol-rt` and the hardware drivers.
 
 ## Current Files
 
@@ -28,7 +28,7 @@ section layout, and special symbols used by `gc-rt` and the hardware drivers.
   need proper handling.
 
 - [ ] **Exception vectors** — The GC exception table lives at `0x80000100`.
-  The current design has `gc-rt` install handler stubs at runtime by writing
+  The current design has `dkdol-rt` install handler stubs at runtime by writing
   to that address. An alternative is to place them in the linker script as
   `AT(0x80000100)`. The runtime approach is currently preferred for simplicity.
 

@@ -8,18 +8,18 @@
 
 ## Milestone 8 — Crash Handler ✅
 
-### gc-crash crate (new)
+### dkdol-crash crate (new)
 
-**Dependency chain:** `gc-rt` + `gc-hal` + `gc-gfx`
+**Dependency chain:** `dkdol-rt` + `dkdol-hal` + `dkdol-gfx`
 
-`gc_crash::init()` registers a crash handler for all fatal PPC exceptions:
+`dkdol_crash::init()` registers a crash handler for all fatal PPC exceptions:
 `SystemReset`, `MachineCheck`, `DSI`, `ISI`, `Alignment`, `Program`, `FpUnavailable`.
 
 When triggered it:
 1. Builds the full output into a 256-line static `LineBuffer` (no heap)
 2. Initialises VI (even if the app's video was torn down) and takes over the XFB
-3. Renders everything visible via `gc-gfx::Console` on a dark red background
-4. Polls the D-pad for scrolling via `gc-hal::si`
+3. Renders everything visible via `dkdol-gfx::Console` on a dark red background
+4. Polls the D-pad for scrolling via `dkdol-hal::si`
 
 **Output layout:**
 
@@ -64,7 +64,7 @@ violation, alignment, TLB miss, etc.).
 
 ## Milestone 9 — Filesystems ✅
 
-### gc-fs crate (new)
+### dkdol-fs crate (new)
 
 A complete filesystem library with a unified VFS layer.
 
@@ -81,7 +81,7 @@ A complete filesystem library with a unified VFS layer.
 
 ---
 
-### `gc-fs::fat` — FAT12/16/32 + ExFAT
+### `dkdol-fs::fat` — FAT12/16/32 + ExFAT
 
 - `FatGeom::parse(&[u8;512])` — BPB parsing; auto-detects FAT12/16/32/ExFAT
 - `FatVolume<D: BlockDev>::mount(dev)` — reads boot sector, validates magic
@@ -96,7 +96,7 @@ A complete filesystem library with a unified VFS layer.
 - 8.3 name matching: case-insensitive, extension dot synthesis
 - Space trimming on both name and extension fields
 
-### `gc-fs::ext2` — EXT2/3/4 read-only
+### `dkdol-fs::ext2` — EXT2/3/4 read-only
 
 - `Ext2<D>::mount(dev)` — reads superblock at byte 1024, validates magic 0xEF53
 - Inode reading: group descriptor → inode table → inode record
@@ -106,7 +106,7 @@ A complete filesystem library with a unified VFS layer.
 - Supports EXT2 rev 0 (fixed 128-byte inodes) and rev 1+ (variable inode size)
 - EXT3/4 read-compatible (journals and extended features ignored)
 
-### `gc-fs::memcard` — Nintendo GC memory card filesystem
+### `dkdol-fs::memcard` — Nintendo GC memory card filesystem
 
 - `MemCardFs::mount(slot)` — reads both directory copies + both BAT copies,
   picks the one with the highest `updated` counter
@@ -121,7 +121,7 @@ A complete filesystem library with a unified VFS layer.
 - Address encoding: `[opcode, addr>>17, addr>>9, addr>>7, addr&0x7F]`
 - Block layout: 0=header, 1/2=directory A/B, 3/4=BAT A/B, 5+=user data
 
-### `gc-fs::dvd` — GameCube disc filesystem
+### `dkdol-fs::dvd` — GameCube disc filesystem
 
 - `GcDvd<D>::mount(dev)` — reads disc header, validates GC magic 0xC2339F3D
 - Disc header: game code, maker code, title, DOL/FST offset/size at 0x420
@@ -132,7 +132,7 @@ A complete filesystem library with a unified VFS layer.
 - `GcDvd::stat(path)` — returns Metadata from FST entry
 - Directory traversal: skips subtrees by jumping to `entry.param2` (next sibling)
 
-### `gc-fs::iso9660` — ISO 9660 + Rock Ridge
+### `dkdol-fs::iso9660` — ISO 9660 + Rock Ridge
 
 - `Iso9660<D>::mount(dev)` — scans VDs at LBA 16+, finds PVD (type 1)
 - VD terminator (0xFF) detection; Joliet VDs skipped (future work)
@@ -144,7 +144,7 @@ A complete filesystem library with a unified VFS layer.
 - Variable sector size (2048 standard, configurable from PVD)
 - Compatible with PS1, Neo Geo CD, PC Engine CD, Sega CD, GD-ROM layouts
 
-### `gc-fs::image` — File-as-block-device bridge
+### `dkdol-fs::image` — File-as-block-device bridge
 
 - `FileImage<SECTOR, D>` wraps any `D: BlockDev` with byte `offset` + `size`
 - Translates image-sector LBAs to device-sector LBAs, handling:
@@ -155,7 +155,7 @@ A complete filesystem library with a unified VFS layer.
 - Use case: `FileImage<2048, SdCard>` wraps an SD card, reads a `.iso` at
   the file's byte offset → pass to `Iso9660::mount()` for transparent ISO access
 
-### `gc-fs::vfs` — Volume manager
+### `dkdol-fs::vfs` — Volume manager
 
 - Static volume table: up to 8 simultaneously mounted volumes, no heap
 - Mount point names: short ASCII strings (`"sd"`, `"dvd"`, `"mc"`, `"iso"`)

@@ -1,0 +1,18 @@
+[package]
+name        = "dkdol-hal"
+description = "GameCube/Wii hardware abstraction layer: VI, GX, SI, EXI, DSP, DVD, AI"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[dependencies]
+dkdol-rt = { path = "../dkdol-rt" }
+
+[features]
+default = []
+wii = ["dkdol-rt/wii"]
+
+[features]
+default = []
+wii = ["dkdol-rt/wii"]

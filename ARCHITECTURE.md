@@ -13,7 +13,7 @@ The I/O stack follows a strict three-layer design:
 └──────────────────────────────┬──────────────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────────────┐
-│  gc-vfs  — virtual filesystem, device tree, file descriptor table   │
+│  dkdol-vfs  — virtual filesystem, device tree, file descriptor table   │
 │                                                                      │
 │  devtree::DevTree         /dev/ in-memory tree                      │
 │  mount::MountTable        device path → FsInstance                  │
@@ -23,7 +23,7 @@ The I/O stack follows a strict three-layer design:
 └──────┬─────────────────────────────────┬────────────────────────────┘
        │                                 │
 ┌──────▼──────────────┐     ┌────────────▼───────────────────────────┐
-│  gc-fs              │     │  gc-hal                                 │
+│  dkdol-fs              │     │  dkdol-hal                                 │
 │                     │     │                                         │
 │  FAT32 / ExFAT      │     │  sd::SdCard   (EXI SPI driver)         │
 │  EXT2 / 3 / 4       │     │  memcard::MemCard                       │
@@ -33,8 +33,8 @@ The I/O stack follows a strict three-layer design:
 └─────────────────────┘     └────────────────────────────────────────┘
 ```
 
-`gc-hal` drives the hardware. `gc-fs` parses filesystems on top of block
-devices. `gc-vfs` builds the unified device tree, mounts filesystems, manages
+`dkdol-hal` drives the hardware. `dkdol-fs` parses filesystems on top of block
+devices. `dkdol-vfs` builds the unified device tree, mounts filesystems, manages
 file descriptors, and exposes HID peripherals as character device files.
 
 ---
@@ -97,7 +97,7 @@ populated at `vfs::init()`, then refreshed by `vfs::poll()`.
 
 ## Crate Responsibilities
 
-### `gc-hal` — hardware drivers
+### `dkdol-hal` — hardware drivers
 
 Owns all register-level I/O. Exports:
 - `sd::SdCard` — EXI SPI SD driver
@@ -109,7 +109,7 @@ Owns all register-level I/O. Exports:
 
 No filesystem logic. No path strings.
 
-### `gc-fs` — filesystem parsers
+### `dkdol-fs` — filesystem parsers
 
 Owns all on-disk format knowledge. Each module is self-contained:
 
@@ -121,16 +121,16 @@ Owns all on-disk format knowledge. Each module is self-contained:
 | `dvd`      |  ✅   |   —    |   —     |
 | `memcard`  |  ✅   |   ✅   |   —     |
 
-`gc-fs` does **not** maintain global state or mount tables. It provides
+`dkdol-fs` does **not** maintain global state or mount tables. It provides
 pure filesystem instances (`FatVolume<D>`, `Ext2<D>`, etc.) that operate
-over any `BlockDev` implementation. The `vfs` module inside `gc-fs` is
-kept for legacy compatibility and should be migrated to `gc-vfs`.
+over any `BlockDev` implementation. The `vfs` module inside `dkdol-fs` is
+kept for legacy compatibility and should be migrated to `dkdol-vfs`.
 
-**The `BlockDev` trait** (defined in `gc-fs::lib`) accepts any type that
-can `read_sector`/`write_sector`. `gc-vfs` bridges `gc-hal::BlockDevice`
+**The `BlockDev` trait** (defined in `dkdol-fs::lib`) accepts any type that
+can `read_sector`/`write_sector`. `dkdol-vfs` bridges `dkdol-hal::BlockDevice`
 to this trait via a newtype wrapper.
 
-### `gc-vfs` — virtual filesystem and device tree (new crate)
+### `dkdol-vfs` — virtual filesystem and device tree (new crate)
 
 The unified API. Owns:
 - The static device tree
@@ -172,7 +172,7 @@ pub enum JournalMode {
 }
 ```
 
-At mount time, `gc-vfs` calls `Ext2::mount_opts(dev, journal_mode)`.
+At mount time, `dkdol-vfs` calls `Ext2::mount_opts(dev, journal_mode)`.
 FAT32 and ISO9660 ignore the flag entirely.
 
 ---
@@ -233,7 +233,7 @@ pub enum IoctlCmd {
 
 ```
 Offset  Size  Field
-  0       2   buttons (bitfield, same layout as gc-hal::si::Buttons)
+  0       2   buttons (bitfield, same layout as dkdol-hal::si::Buttons)
   2       1   stick_x   (u8, center = 128)
   3       1   stick_y
   4       1   cstick_x
@@ -271,11 +271,11 @@ freed.
 
 ## Migration Guide
 
-### Replacing `gc-fs::vfs` calls
+### Replacing `dkdol-fs::vfs` calls
 
-Old (gc-fs VFS):
+Old (dkdol-fs VFS):
 ```rust
-use gc_fs::vfs;
+use dkdol_fs::vfs;
 unsafe {
     vfs::mount_sd(SdSlot::Sp2, "sd", FsKind::Auto);
     let mut f = vfs::open("sd:/game.dol").unwrap();
@@ -283,9 +283,9 @@ unsafe {
 }
 ```
 
-New (gc-vfs):
+New (dkdol-vfs):
 ```rust
-use gc_vfs as vfs;
+use dkdol_vfs as vfs;
 unsafe {
     vfs::init();                   // probes + auto-mounts everything
     let fd = vfs::open("/dev/sd/sp/game.dol", vfs::O_RDONLY).unwrap();
@@ -294,17 +294,17 @@ unsafe {
 }
 ```
 
-### Replacing `gc-hal::si` calls
+### Replacing `dkdol-hal::si` calls
 
 Old:
 ```rust
-match gc_hal::si::read_pad(Port::P1) {
+match dkdol_hal::si::read_pad(Port::P1) {
     PadResult::Ok(pad) => { /* use pad */ }
     _ => {}
 }
 ```
 
-New (still works — `gc-hal::si` is unchanged):
+New (still works — `dkdol-hal::si` is unchanged):
 ```rust
 // Filesystem-style alternative:
 let fd = vfs::open("/dev/hid/p1/std", vfs::O_RDONLY).unwrap();
@@ -312,7 +312,7 @@ let mut state = ControllerState::default();
 vfs::read(fd, bytemuck::bytes_of_mut(&mut state)).unwrap();
 ```
 
-Both APIs coexist. `gc-hal::si` remains valid for tight loops. The VFS
+Both APIs coexist. `dkdol-hal::si` remains valid for tight loops. The VFS
 path is preferred for tools, save managers, and anything that already
 has a fd open.
 
@@ -324,20 +324,20 @@ has a fd open.
 # Cargo.toml (root workspace)
 members = [
     # existing ...
-    "crates/gc-vfs",   # NEW
+    "crates/dkdol-vfs",   # NEW
 ]
 ```
 
 ```toml
-# crates/gc-vfs/Cargo.toml
+# crates/dkdol-vfs/Cargo.toml
 [dependencies]
-gc-hal = { path = "../gc-hal" }
-gc-fs  = { path = "../gc-fs", features = ["fat", "ext2", "memcard", "dvd", "iso9660"] }
-gc-rt  = { path = "../gc-rt" }
+dkdol-hal = { path = "../dkdol-hal" }
+dkdol-fs  = { path = "../dkdol-fs", features = ["fat", "ext2", "memcard", "dvd", "iso9660"] }
+dkdol-rt  = { path = "../dkdol-rt" }
 ```
 
-`gc-fs` remains in the workspace as a standalone crate for direct use.
-`gc-vfs` is the recommended high-level entry point for new code.
+`dkdol-fs` remains in the workspace as a standalone crate for direct use.
+`dkdol-vfs` is the recommended high-level entry point for new code.
 
 ---
 
@@ -350,7 +350,7 @@ gc-rt  = { path = "../gc-rt" }
   from a single thread (no RTOS; bare metal).
 - **No RTOS scheduler**: `poll()` is cooperative, not interrupt-driven.
   DVD cover-open detection uses the PI interrupt if available.
-- **Stack depth**: `gc-fs` filesystem functions allocate up to ~12 KB of
+- **Stack depth**: `dkdol-fs` filesystem functions allocate up to ~12 KB of
   stack temporaries (extent tree traversal). Game code must ensure the
-  stack is large enough when calling VFS functions (default `gc-rt` stack
+  stack is large enough when calling VFS functions (default `dkdol-rt` stack
   is 64 KB).

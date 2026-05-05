@@ -1,6 +1,6 @@
 //! # vfs_demo — DevKit DOL
 //!
-//! Demonstrates the gc-vfs unified device tree:
+//! Demonstrates the dkdol-vfs unified device tree:
 //!   - Device enumeration via `list_devices()`
 //!   - Lazy filesystem mounting on first `open()` to a device path
 //!   - Reading a file from an SD card  (/dev/sd/sp/…)
@@ -13,9 +13,9 @@
 #![no_main]
 
 use core::fmt::Write;
-use gc_gfx::{Console, Xfb, YcbcrPair, color};
-use gc_hal::vi;
-use gc_vfs::{self as vfs, ControllerState, O_RDONLY};
+use dkdol_gfx::{Console, Xfb, YcbcrPair, color};
+use dkdol_hal::vi;
+use dkdol_vfs::{self as vfs, ControllerState, O_RDONLY};
 
 const W: u32 = 640;
 const H: u32 = 480;
@@ -116,7 +116,7 @@ unsafe fn run() -> ! {
         con.flush();
         vi::set_framebuffer(ptr, W * 2);
         vi::flush();
-        gc_rt::timer::delay_ms(16);
+        dkdol_rt::timer::delay_ms(16);
         frame = frame.wrapping_add(1);
     }
 }

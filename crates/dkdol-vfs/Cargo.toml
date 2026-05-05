@@ -1,0 +1,31 @@
+[package]
+name        = "dkdol-vfs"
+description = "GameCube/Wii virtual filesystem — mandatory /dev/ device tree, optional storage backends"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+dkdol-hal = { path = "../dkdol-hal" }
+dkdol-rt  = { path = "../dkdol-rt" }
+dkdol-fs  = { path = "../dkdol-fs", optional = true }
+
+[features]
+default = []
+
+# ── Filesystem backends (each pulls in dkdol-fs with the matching sub-feature) ──
+fat     = ["dep:dkdol-fs", "dkdol-fs/fat",     "_fs"]
+ext2    = ["dep:dkdol-fs", "dkdol-fs/ext2",    "_fs"]
+iso9660 = ["dep:dkdol-fs", "dkdol-fs/iso9660", "_fs"]
+dvd     = ["dep:dkdol-fs", "dkdol-fs/dvd",     "_fs"]
+memcard = ["dep:dkdol-fs", "dkdol-fs/memcard", "_fs"]
+
+# Convenience: every filesystem at once
+all-fs  = ["fat", "ext2", "iso9660", "dvd", "memcard"]
+
+# Internal sentinel — set by any filesystem feature.
+# Gate filesystem-only source with #[cfg(feature = "_fs")].
+_fs = []
+
+wii = ["dkdol-hal/wii", "dkdol-rt/wii"]

@@ -33,4 +33,4 @@ These tell `rustc` and LLVM everything about the target CPU, ABI, and linker.
 
 - [ ] Create a second target spec for the Wii's Broadway CPU.
   Broadway is Gekko + higher clock + minor extensions. The target JSON will be nearly
-  identical but gated behind the `wii` feature in `gc-hal`.
+  identical but gated behind the `wii` feature in `dkdol-hal`.

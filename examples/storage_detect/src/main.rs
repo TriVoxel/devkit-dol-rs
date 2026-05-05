@@ -37,8 +37,8 @@
 #![no_main]
 
 use core::fmt::Write;
-use gc_gfx::{Console, Xfb, YcbcrPair, color};
-use gc_hal::{vi, storage::{self, StorageKind, StorageInfo}};
+use dkdol_gfx::{Console, Xfb, YcbcrPair, color};
+use dkdol_hal::{vi, storage::{self, StorageKind, StorageInfo}};
 
 // ─── Framebuffer ─────────────────────────────────────────────────────────────
 
@@ -59,7 +59,7 @@ static mut SECTOR: SectorBuf = SectorBuf([0u8; 512]);
 // Storage scan results
 static mut DEVICES: [StorageInfo; 8] = [StorageInfo {
     kind: StorageKind::DvdDisc,
-    dev_type: gc_hal::exi::DeviceType::None,
+    dev_type: dkdol_hal::exi::DeviceType::None,
     sector_size: 0,
     sector_count: 0,
     read_only: false,
@@ -181,12 +181,12 @@ unsafe fn run() -> ! {
     vi::set_framebuffer(fb_ptr, FB_WIDTH * 2);
     vi::flush();
 
-    loop { gc_rt::timer::delay_ms(1000); }
+    loop { dkdol_rt::timer::delay_ms(1000); }
 }
 
 /// Try to read sector 0 from a device, return first 8 bytes or None.
 unsafe fn try_read_first(dev: &StorageInfo) -> Option<[u8; 8]> {
-    use gc_hal::storage::{SdCard, SdSlot, MemCard, CardSlot};
+    use dkdol_hal::storage::{SdCard, SdSlot, MemCard, CardSlot};
 
     match dev.kind {
         StorageKind::SdCardSlotA => {

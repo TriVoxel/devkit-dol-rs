@@ -1,0 +1,15 @@
+[package]
+name        = "dkdol-gfx"
+description = "GameCube framebuffer graphics: XFB management, text console, 2D drawing"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[dependencies]
+dkdol-rt  = { path = "../dkdol-rt" }
+dkdol-hal = { path = "../dkdol-hal" }
+
+[features]
+default = []
+wii = ["dkdol-hal/wii", "dkdol-rt/wii"]

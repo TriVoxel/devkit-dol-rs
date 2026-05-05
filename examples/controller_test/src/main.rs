@@ -23,8 +23,8 @@
 #![no_main]
 
 use core::fmt::Write;
-use gc_gfx::{Console, Xfb, YcbcrPair, color};
-use gc_hal::{vi, si::{self, Port, Buttons, PadResult}};
+use dkdol_gfx::{Console, Xfb, YcbcrPair, color};
+use dkdol_hal::{vi, si::{self, Port, Buttons, PadResult}};
 
 // ─── Framebuffer ─────────────────────────────────────────────────────────────
 
@@ -142,7 +142,7 @@ unsafe fn run() -> ! {
         vi::flush();
 
         // Simple vsync-ish delay: ~1/60 s at 40.5 MHz TBR
-        gc_rt::timer::delay_ms(16);
+        dkdol_rt::timer::delay_ms(16);
 
         frame = frame.wrapping_add(1);
     }

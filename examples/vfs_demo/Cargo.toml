@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
-gc-vfs = { path = "../../crates/gc-vfs", features = ["all-fs"] }
-gc-gfx = { path = "../../crates/gc-gfx" }
-gc-hal = { path = "../../crates/gc-hal" }
-gc-rt  = { path = "../../crates/gc-rt" }
+dkdol-vfs = { path = "../../crates/dkdol-vfs", features = ["all-fs"] }
+dkdol-gfx = { path = "../../crates/dkdol-gfx" }
+dkdol-hal = { path = "../../crates/dkdol-hal" }
+dkdol-rt  = { path = "../../crates/dkdol-rt" }

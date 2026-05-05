@@ -40,9 +40,9 @@
 use core::fmt::Write;
 use core::sync::atomic::{AtomicU32, AtomicBool, Ordering};
 
-use gc_gfx::{Console, Xfb, YcbcrPair, color};
-use gc_hal::{vi, ai};
-use gc_hal::ai::SampleRate;
+use dkdol_gfx::{Console, Xfb, YcbcrPair, color};
+use dkdol_hal::{vi, ai};
+use dkdol_hal::ai::SampleRate;
 
 // ─── Audio constants ──────────────────────────────────────────────────────────
 
@@ -149,7 +149,7 @@ unsafe fn run() -> ! {
         vi::set_framebuffer(fb_ptr, FB_WIDTH * 2);
         vi::flush();
 
-        gc_rt::timer::delay_ms(16);
+        dkdol_rt::timer::delay_ms(16);
         frame = frame.wrapping_add(1);
     }
 }

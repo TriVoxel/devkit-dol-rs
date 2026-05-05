@@ -36,8 +36,8 @@
 #![no_main]
 
 use core::fmt::Write;
-use gc_gfx::{Console, Xfb, YcbcrPair, color};
-use gc_hal::{vi, sd::{self, Slot, SdError}};
+use dkdol_gfx::{Console, Xfb, YcbcrPair, color};
+use dkdol_hal::{vi, sd::{self, Slot, SdError}};
 
 // ─── Framebuffer ─────────────────────────────────────────────────────────────
 
@@ -104,7 +104,7 @@ unsafe fn run() -> ! {
             con.flush();
             vi::set_framebuffer(fb_ptr, FB_WIDTH * 2);
             vi::flush();
-            loop { gc_rt::timer::delay_ms(1000); }
+            loop { dkdol_rt::timer::delay_ms(1000); }
         }
         Err(e) => {
             con.set_fg(color::RED);
@@ -112,7 +112,7 @@ unsafe fn run() -> ! {
             con.flush();
             vi::set_framebuffer(fb_ptr, FB_WIDTH * 2);
             vi::flush();
-            loop { gc_rt::timer::delay_ms(1000); }
+            loop { dkdol_rt::timer::delay_ms(1000); }
         }
     }
 
@@ -172,5 +172,5 @@ unsafe fn run() -> ! {
     vi::set_framebuffer(fb_ptr, FB_WIDTH * 2);
     vi::flush();
 
-    loop { gc_rt::timer::delay_ms(1000); }
+    loop { dkdol_rt::timer::delay_ms(1000); }
 }

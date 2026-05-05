@@ -1,0 +1,16 @@
+[package]
+name        = "dkdol-crash"
+description = "GameCube/Wii crash handler: register dump, stack trace, D-pad scrolling"
+version.workspace    = true
+authors.workspace    = true
+edition.workspace    = true
+license.workspace    = true
+
+[dependencies]
+dkdol-rt  = { path = "../dkdol-rt" }
+dkdol-hal = { path = "../dkdol-hal" }
+dkdol-gfx = { path = "../dkdol-gfx" }
+
+[features]
+default = []
+wii = ["dkdol-rt/wii", "dkdol-hal/wii", "dkdol-gfx/wii"]

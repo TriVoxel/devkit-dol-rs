@@ -2,10 +2,10 @@
 resolver = "2"
 
 members = [
-    "crates/gc-rt",
-    "crates/gc-hal",
-    "crates/gc-gfx",
-    "crates/gc-alloc",
+    "crates/dkdol-rt",
+    "crates/dkdol-hal",
+    "crates/dkdol-gfx",
+    "crates/dkdol-alloc",
     "tools/elf2dol",
     "tools/cargo-dkdol",
     "examples/hello_world",
@@ -14,9 +14,9 @@ members = [
     "examples/sine_wave",
     "examples/sd_reader",
     "examples/storage_detect",
-    "crates/gc-crash",
-    "crates/gc-fs",
-    "crates/gc-vfs",
+    "crates/dkdol-crash",
+    "crates/dkdol-fs",
+    "crates/dkdol-vfs",
     "examples/vfs_demo",
 ]
 

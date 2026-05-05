@@ -3,7 +3,7 @@
 //! Boots on GameCube (or Dolphin), initialises NTSC 480i video, and prints
 //! "Hello, GameCube!" to the screen using the framebuffer text console.
 //!
-//! ## Boot sequence (handled by gc-rt)
+//! ## Boot sequence (handled by dkdol-rt)
 //!
 //! 1. `_start` (assembly): initialise BATs, GPRs, FPU, cache, BSS → call `main`
 //! 2. `main` (this file): init VI, allocate XFB, draw text, loop
@@ -28,8 +28,8 @@
 #![no_std]
 #![no_main]
 
-use gc_gfx::{Xfb, Console, YcbcrPair, color};
-use gc_hal::vi;
+use dkdol_gfx::{Xfb, Console, YcbcrPair, color};
+use dkdol_hal::vi;
 use core::fmt::Write;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -39,7 +39,7 @@ use core::fmt::Write;
 // 640 × 480 × 2 bytes = 614,400 bytes ≈ 600 KB.
 //
 // Alignment: 32 bytes (cache line size and VI requirement).
-// Address: the linker places this in .bss (zeroed by gc-rt before main).
+// Address: the linker places this in .bss (zeroed by dkdol-rt before main).
 // ─────────────────────────────────────────────────────────────────────────────
 
 const FB_WIDTH:  u32 = 640;
@@ -50,14 +50,14 @@ const FB_WORDS:  usize = (FB_WIDTH * FB_HEIGHT / 2) as usize; // u32 per pixel-p
 #[repr(C, align(32))]
 struct AlignedFb([u32; FB_WORDS]);
 
-/// Static XFB storage in BSS. Zeroed before main() by gc-rt.
+/// Static XFB storage in BSS. Zeroed before main() by dkdol-rt.
 static mut FRAMEBUFFER: AlignedFb = AlignedFb([0u32; FB_WORDS]);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Entry point
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Application entry point, called by the gc-rt boot assembly after all
+/// Application entry point, called by the dkdol-rt boot assembly after all
 /// hardware initialisation and BSS zeroing.
 #[no_mangle]
 pub extern "C" fn main() -> ! {
@@ -121,6 +121,6 @@ unsafe fn run() -> ! {
     // For this hello world we just loop and let the VI keep displaying.
     loop {
         // Keep the CPU from executing out of the interrupt handler
-        gc_rt::cache::sync();
+        dkdol_rt::cache::sync();
     }
 }

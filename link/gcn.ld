@@ -13,7 +13,7 @@
  *   A .dol file has up to 7 text sections and 11 data sections, each with a
  *   load address, file offset, and size. The IPL/loader copies each section
  *   to its physical address and then jumps to the entry point.
- *   The entry point is _start (defined in gc-rt).
+ *   The entry point is _start (defined in dkdol-rt).
  */
 
 OUTPUT_FORMAT("elf32-powerpc", "elf32-powerpc", "elf32-powerpc")
@@ -31,7 +31,7 @@ MEMORY {
     STACK (rw) : ORIGIN = 0x817F0000, LENGTH = 0x00010000
 }
 
-/* ── Symbols referenced by gc-rt boot code ─────────────────────────────── */
+/* ── Symbols referenced by dkdol-rt boot code ─────────────────────────────── */
 __mem1_start    = 0x80000000;
 __mem1_end      = 0x81800000;
 __stack_top     = 0x817FFFF0;   /* aligned to 16 bytes; stack grows down */
@@ -84,7 +84,7 @@ SECTIONS {
         . = ALIGN(32);
     } > MEM1
 
-    /* ── .bss: Zeroed at startup by gc-rt ── */
+    /* ── .bss: Zeroed at startup by dkdol-rt ── */
     .bss ALIGN(32) : {
         __bss_start = .;
         *(.bss .bss.*)

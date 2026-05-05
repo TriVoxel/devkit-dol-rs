@@ -46,16 +46,16 @@ cargo dkdol run --release --example hello
 
 | Crate       | Purpose                                                    | Status |
 |-------------|------------------------------------------------------------|--------|
-| `gc-rt`     | Boot, exception table, IRQ, timer, BSS init                | ✅     |
-| `gc-hal`    | Hardware drivers for every GC/Wii subsystem                | ✅     |
-| `gc-gfx`    | XFB framebuffer, YCbCr helpers, 8×8 font, text console     | ✅     |
-| `gc-alloc`  | `GlobalAllocator` — first-fit linked-list over MEM1/MEM2   | ✅     |
+| `dkdol-rt`     | Boot, exception table, IRQ, timer, BSS init                | ✅     |
+| `dkdol-hal`    | Hardware drivers for every GC/Wii subsystem                | ✅     |
+| `dkdol-gfx`    | XFB framebuffer, YCbCr helpers, 8×8 font, text console     | ✅     |
+| `dkdol-alloc`  | `GlobalAllocator` — first-fit linked-list over MEM1/MEM2   | ✅     |
 | `elf2dol`   | Host tool: ELF → DOL converter                             | ✅     |
 | `cargo-dkdol`  | `cargo dkdol build/run/dol/new` subcommand                    | ✅     |
 
 ---
 
-## gc-hal subsystems
+## dkdol-hal subsystems
 
 | Module    | Hardware                          | GC  | Wii  |
 |-----------|-----------------------------------|-----|------|
@@ -74,7 +74,7 @@ cargo dkdol run --release --example hello
 | `mem2`    | Wii MEM2 (64 MB extended RAM)     | —   | ✅   |
 
 All hardware modules switch MMIO prefix automatically when built
-with `--features gc-hal/wii` (or `cargo dkdol build --wii`).
+with `--features dkdol-hal/wii` (or `cargo dkdol build --wii`).
 
 ---
 
@@ -98,15 +98,15 @@ with `--features gc-hal/wii` (or `cargo dkdol build --wii`).
 
 | Device            | Port              | Driver            | Notes                  |
 |-------------------|-------------------|-------------------|------------------------|
-| SD Gecko          | Slot A (EXI 0)    | `gc-hal::sd`      |                        |
-| SD Gecko          | Slot B (EXI 1)    | `gc-hal::sd`      |                        |
-| SD2SP2            | SP2 (EXI 2)       | `gc-hal::sd`      | Serial Port 2 adapter  |
-| GC Memory Card    | Slot A/B          | `gc-hal::memcard` |                        |
-| MemCard PRO GC    | Slot A/B          | `gc-hal::memcard` |                        |
-| DVD drive         | DI registers      | `gc-hal::dvd`     |                        |
-| **CubeODE**       | DI registers      | `gc-hal::dvd` ✓   | Transparent ODE        |
-| **GCLoader**      | DI registers      | `gc-hal::dvd` ✓   | Transparent ODE        |
-| **Flippy Drive**  | DI registers      | `gc-hal::dvd` ✓   | Transparent ODE        |
+| SD Gecko          | Slot A (EXI 0)    | `dkdol-hal::sd`      |                        |
+| SD Gecko          | Slot B (EXI 1)    | `dkdol-hal::sd`      |                        |
+| SD2SP2            | SP2 (EXI 2)       | `dkdol-hal::sd`      | Serial Port 2 adapter  |
+| GC Memory Card    | Slot A/B          | `dkdol-hal::memcard` |                        |
+| MemCard PRO GC    | Slot A/B          | `dkdol-hal::memcard` |                        |
+| DVD drive         | DI registers      | `dkdol-hal::dvd`     |                        |
+| **CubeODE**       | DI registers      | `dkdol-hal::dvd` ✓   | Transparent ODE        |
+| **GCLoader**      | DI registers      | `dkdol-hal::dvd` ✓   | Transparent ODE        |
+| **Flippy Drive**  | DI registers      | `dkdol-hal::dvd` ✓   | Transparent ODE        |
 
 ---
 
@@ -147,9 +147,9 @@ target_wii  = "targets/powerpc-broadway-eabi.json"
 ```
 Your Rust App
       │
-      ├── gc-hal::mmio        MMIO base (0xCC or 0xCD, compile-time feature)
+      ├── dkdol-hal::mmio        MMIO base (0xCC or 0xCD, compile-time feature)
       │
-      ├── gc-hal              Hardware abstraction layer
+      ├── dkdol-hal              Hardware abstraction layer
       │     ├── vi            VI — NTSC/PAL timing, XFB pointer
       │     ├── gx            GPU — FIFO, matrices, TEV, draw calls
       │     ├── si            Controllers — sync poll, 4 ports
@@ -163,9 +163,9 @@ Your Rust App
       │     ├── storage       BlockDevice trait + auto-scan all slots
       │     └── mem2          Wii MEM2 constants (wii feature only)
       │
-      ├── gc-gfx              CPU framebuffer: XFB, Console, color
-      ├── gc-alloc            MEM1 heap (first-fit, 32-byte aligned)
-      └── gc-rt               Bare-metal runtime
+      ├── dkdol-gfx              CPU framebuffer: XFB, Console, color
+      ├── dkdol-alloc            MEM1 heap (first-fit, 32-byte aligned)
+      └── dkdol-rt               Bare-metal runtime
             ├── _start        Boot: BATs (+ MEM2 BATs on Wii), FPU, BSS
             ├── exception     15 PPC vectors, full ExcCtx save/restore
             ├── irq           MSR[EE] critical sections

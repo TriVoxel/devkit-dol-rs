@@ -30,8 +30,8 @@
 #![no_std]
 #![no_main]
 
-use gc_hal::{vi, gx};
-use gc_hal::gx::{state, draw, types::*};
+use dkdol_hal::{vi, gx};
+use dkdol_hal::gx::{state, draw, types::*};
 
 // ─── Static buffers ───────────────────────────────────────────────────────────
 
@@ -154,7 +154,7 @@ unsafe fn run() -> ! {
         }
 
         // Simple vsync approximation — wait ~16 ms
-        gc_rt::timer::delay_ms(16);
+        dkdol_rt::timer::delay_ms(16);
 
         frame = frame.wrapping_add(1);
     }

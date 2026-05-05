@@ -344,11 +344,11 @@ version = "0.1.0"
 edition = "2021"
 
 # Replace path deps with git/version once published:
-# gc-rt = "0.1"
+# dkdol-rt = "0.1"
 [dependencies]
-gc-rt  = {{ path = "vendor/devkit-dol/crates/gc-rt"  }}
-gc-hal = {{ path = "vendor/devkit-dol/crates/gc-hal" }}
-gc-gfx = {{ path = "vendor/devkit-dol/crates/gc-gfx" }}
+dkdol-rt  = {{ path = "vendor/devkit-dol/crates/dkdol-rt"  }}
+dkdol-hal = {{ path = "vendor/devkit-dol/crates/dkdol-hal" }}
+dkdol-gfx = {{ path = "vendor/devkit-dol/crates/dkdol-gfx" }}
 
 [[example]]
 name = "hello"
@@ -386,8 +386,8 @@ r#"//! Hello World — {name}
 #![no_std]
 #![no_main]
 
-use gc_gfx::{{Console, Xfb, YcbcrPair}};
-use gc_hal::vi;
+use dkdol_gfx::{{Console, Xfb, YcbcrPair}};
+use dkdol_hal::vi;
 use core::fmt::Write;
 
 const W: u32 = 640;
@@ -531,7 +531,7 @@ USAGE:
     cargo dkdol new <name>
 
 Creates <name>/ with:
-    Cargo.toml              gc-rt/gc-hal/gc-gfx deps, metadata.gc section
+    Cargo.toml              dkdol-rt/dkdol-hal/dkdol-gfx deps, metadata.gc section
     examples/hello.rs       Hello World
     .cargo/config.toml      target + rustflags
     rust-toolchain.toml     nightly + rust-src
