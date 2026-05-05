@@ -30,8 +30,6 @@
 //! Reference: <https://www.gc-forever.com/yagcd/chap13.html>
 
 use std::fs;
-use std::io::{self, Read, Write};
-use std::path::Path;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -84,14 +82,13 @@ const EM_PPC:      u16   = 20;
 const PT_LOAD:     u32   = 1;
 const SHT_NOBITS:  u32   = 8;   // BSS
 const SHF_ALLOC:   u32   = 0x2;
-const SHF_EXECINSTR: u32 = 0x4;
 
 struct ElfSect {
-    name_idx: u32,
+    _name_idx: u32,
     sh_type:  u32,
     flags:    u32,
     addr:     u32,
-    offset:   u32,
+    _offset:  u32,
     size:     u32,
 }
 
@@ -100,9 +97,9 @@ struct ElfPhdr {
     offset:   u32,
     vaddr:    u32,
     filesz:   u32,
-    memsz:    u32,
+    _memsz:   u32,
     flags:    u32,
-    align:    u32,
+    _align:   u32,
 }
 
 fn elf_to_dol(elf: &[u8]) -> Result<Vec<u8>, String> {
@@ -128,7 +125,7 @@ fn elf_to_dol(elf: &[u8]) -> Result<Vec<u8>, String> {
     let e_phnum     = u16be(elf, 44) as usize;
     let e_shentsize = u16be(elf, 46) as usize;
     let e_shnum     = u16be(elf, 48) as usize;
-    let e_shstrndx  = u16be(elf, 50) as usize;
+    let _e_shstrndx = u16be(elf, 50) as usize;
 
     // ── Parse program headers (PT_LOAD segments) ─────────────────────────
     let mut phdrs: Vec<ElfPhdr> = Vec::new();
@@ -136,12 +133,12 @@ fn elf_to_dol(elf: &[u8]) -> Result<Vec<u8>, String> {
         let off = e_phoff + i * e_phentsize;
         let ph = ElfPhdr {
             p_type: u32be(elf, off),
-            offset: u32be(elf, off + 4),
+            offset:  u32be(elf, off + 4),
             vaddr:  u32be(elf, off + 8),
             filesz: u32be(elf, off + 16),
-            memsz:  u32be(elf, off + 20),
+            _memsz:  u32be(elf, off + 20),
             flags:  u32be(elf, off + 24),
-            align:  u32be(elf, off + 28),
+            _align:  u32be(elf, off + 28),
         };
         if ph.p_type == PT_LOAD { phdrs.push(ph); }
     }
@@ -153,11 +150,11 @@ fn elf_to_dol(elf: &[u8]) -> Result<Vec<u8>, String> {
     for i in 0..e_shnum {
         let off = e_shoff + i * e_shentsize;
         let s = ElfSect {
-            name_idx: u32be(elf, off),
+            _name_idx: u32be(elf, off),
             sh_type:  u32be(elf, off + 4),
             flags:    u32be(elf, off + 8),
             addr:     u32be(elf, off + 12),
-            offset:   u32be(elf, off + 16),
+            _offset:   u32be(elf, off + 16),
             size:     u32be(elf, off + 20),
         };
         if s.sh_type == SHT_NOBITS && s.flags & SHF_ALLOC != 0 && s.size > 0 {

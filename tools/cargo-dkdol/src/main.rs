@@ -198,7 +198,7 @@ fn locate_elf(root: &Path, tgt: &str, prof: &str, b: &BuildArgs) -> Result<PathB
     let base = root.join("target").join(tgt_dir).join(prof);
 
     // Resolve example name as a package name (workspace member)
-    let pkg_name = b.package.as_deref().or(b.example.as_deref());
+    let _pkg_name = b.package.as_deref().or(b.example.as_deref());
     if let Some(ex) = &b.example {
         // Also check legacy examples/ subdir layout just in case
         let p = base.join("examples").join(ex);

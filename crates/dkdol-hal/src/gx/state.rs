@@ -28,16 +28,21 @@ pub unsafe fn set_vtx_desc_pos(t: AttrType) {
 
 /// Set up VCD Lo for: position DIRECT + color0 DIRECT (common 2D/3D case).
 pub unsafe fn set_vtx_desc_pos_clr0() {
-    // pos bits 10:9 = 01 (DIRECT) → 0b01 << 9 = 0x200
-    // clr0 bits 14:13 = 01 (DIRECT) → 0b01 << 13 = 0x2000
+    // CP VCD Lo: pos bits 10:9 = 01 (DIRECT) | clr0 bits 14:13 = 01 (DIRECT)
     wp::load_cp_reg(0x50, 0x2200);
     wp::load_cp_reg(0x60, 0);
+    // XF VTXSPECS (0x1008): INVTXSPEC — tells XF how many of each attribute.
+    // bits 1:0 = numcolors (1), bits 3:2 = numnormals (0), bits 7:4 = numtextures (0)
+    // pos+clr0, no normals, no tex → 0x01
+    wp::load_xf_reg(0x1008, 0x01);
 }
 
 /// Set up VCD Lo for: position DIRECT only (no color attribute).
 pub unsafe fn set_vtx_desc_pos_only() {
     wp::load_cp_reg(0x50, 0x0200);
     wp::load_cp_reg(0x60, 0);
+    // XF VTXSPECS: numcolors=0, numnormals=0, numtextures=0 → 0x00
+    wp::load_xf_reg(0x1008, 0x00);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -56,8 +61,8 @@ pub unsafe fn set_vtx_desc_pos_only() {
 //   bits  9:9  NrmElements
 //   bits 13:10 NrmFormat
 //   bits 14:14 NrmMidx3
-//   bits 16:15 Clr0Elements (0=RGB, 1=RGBA)
-//   bits 19:17 Clr0Format   (0=RGB565, 1=RGB8, 2=RGBX8, 3=RGBA4, 4=RGBA6, 5=RGBA8)
+//   bit  13:14 Clr0Elements (0=RGB, 1=RGBA)
+//   bits 16:14 Clr0Format   (0=RGB565, 1=RGB8, 2=RGBX8, 3=RGBA4, 4=RGBA6, 5=RGBA8)
 //   bits 22:20 Clr1Elements+Format (same pattern)
 //   bits 25:23 Clr1Format
 //   bits 29:26 (tex0 overflow)
@@ -71,12 +76,12 @@ pub unsafe fn set_vtx_fmt_pos_xyz_f32_clr_rgba8(fmt: VtxFmt) {
     //   PosElements = 1 (XYZ)      → bit 0  = 1
     //   PosFormat   = 4 (F32)      → bits 4:1 = 4 → 4<<1 = 0x08
     //   PosFrac     = 0            → bits 8:5 = 0
-    //   Clr0Elems   = 1 (RGBA)     → bit 15 = 1 → 1<<15 = 0x8000
-    //   Clr0Format  = 5 (RGBA8)    → bits 18:16 = 5 → 5<<16 = 0x50000
+    //   Clr0Elems   = 1 (RGBA)     → bit 13   → 1<<13 = 0x2000
+    //   Clr0Format  = 5 (RGBA8)    → bits 16:14 → 5<<14 = 0x14000
     //   NrmMidx3    = 1 (bit 30, libogc2 init default)
     let vat0: u32 = 0x4000_0000  // NrmMidx3 bit (libogc2 default)
-                  | (5u32 << 16) // Clr0Format = RGBA8
-                  | (1u32 << 15) // Clr0Elements = RGBA
+                  | (5u32 << 14) // Clr0Format = RGBA8  (bits 16:14)
+                  | (1u32 << 13) // Clr0Elements = RGBA (bit 13)
                   | (4u32 <<  1) // PosFormat = F32
                   | (1u32 <<  0) // PosElements = XYZ
                   ;
@@ -261,10 +266,13 @@ pub unsafe fn set_cull_mode(mode: CullMode) {
 }
 
 /// Enable/disable clipping (XF reg 0x101A bit 0; confusingly same addr as viewport).
-/// Write to XF 0x1008 = clip disable.
-pub unsafe fn set_clip_mode(enable: bool) {
-    // XF 0x1008 clip disable: 1 = clip disabled, 0 = enabled
-    wp::load_xf_reg(0x1008, if enable { 0 } else { 1 });
+/// Enable or disable GX clipping.
+///
+/// GX clipping is always active; this is currently a no-op. Do not call.
+#[allow(dead_code)]
+pub unsafe fn set_clip_mode(_enable: bool) {
+    // XF 0x1008 is VTXSPECS, not clip control. GX has no software
+    // clip-disable register — clipping is always on.
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -360,9 +368,35 @@ pub unsafe fn set_tev_order_vtx_only() {
     wp::load_bp_reg(0xE000_0000 | order);
 }
 
-/// Set the number of colour channels output by rasteriser (XF reg 0x1009).
+/// Set the number of colour channels output by rasteriser (XF reg 0x100E = SETNUMCHAN).
 pub unsafe fn set_num_color_chans(n: u8) {
-    wp::load_xf_reg(0x1009, n as u32);
+    wp::load_xf_reg(0x100E, n as u32);
+}
+
+
+/// Configure colour channel 0 for vertex-colour passthrough (no lighting).
+///
+/// Sets the XF channel control so the rasteriser outputs the raw vertex colour:
+/// - Material source = vertex (matSrc=1, bit 1)
+/// - Lighting disabled (enable=0, bit 0)
+/// - Ambient source = register (ambSrc=0, bit 2)
+///
+/// Writes XF 0x100F (CHAN0_COLOR) and XF 0x1011 (CHAN0_ALPHA).
+/// Call after [`set_num_color_chans`].
+pub unsafe fn set_chan_ctrl_vtx_color() {
+    // XF CHAN_COLOR control register format:
+    //   bit 0:    lighting enable (0=off)
+    //   bit 1:    material source (0=register, 1=vertex)
+    //   bit 2:    ambient source  (0=register, 1=vertex)
+    //   bits 6:3: light mask
+    //   bit 7:    diffuse function
+    //   bits 9:8: attenuation function
+    //
+    // For vertex-colour passthrough: enable=0, matSrc=vertex(1) → 0b010 = 0x02
+    const CTRL: u32 = 1 << 1; // matSrc = vertex
+
+    wp::load_xf_reg(0x100F, CTRL); // CHAN0_COLOR
+    wp::load_xf_reg(0x1011, CTRL); // CHAN0_ALPHA
 }
 
 /// Set the number of texture coordinate generators (XF reg 0x103F).
