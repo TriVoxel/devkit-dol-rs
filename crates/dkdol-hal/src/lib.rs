@@ -27,7 +27,6 @@
 //!   ```
 
 #![no_std]
-#![feature(asm_experimental_arch)]
 
 pub mod ai;
 pub mod dsp;

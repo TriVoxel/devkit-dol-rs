@@ -395,8 +395,11 @@ fn apply_deadzone(x: f32, y: f32, dz: f32) -> (f32, f32) {
 
 fn libm_sqrtf(x: f32) -> f32 {
     if x <= 0.0 { return 0.0; }
-    let est: f32;
-    unsafe { core::arch::asm!("frsqrte {0}, {1}", out(freg) est, in(freg) x as f64) }
+    // Quake-style bit-manipulation rsqrt + two Newton-Raphson steps.
+    // ~22 bits accuracy, no inline assembly required.
+    let bits = x.to_bits();
+    let est = f32::from_bits(0x5F37_59DF - (bits >> 1));
     let y = est * (1.5 - 0.5 * x * est * est);
+    let y = y   * (1.5 - 0.5 * x * y   * y);
     x * y
 }

@@ -9,7 +9,6 @@
 //! - **Cache**: `dcbf`, `dcbi`, `icbi` wrappers
 
 #![no_std]
-#![feature(asm_experimental_arch)]  // required for inline PPC asm
 
 pub mod cache;
 pub mod exception;

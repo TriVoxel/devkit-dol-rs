@@ -153,7 +153,7 @@ pub unsafe fn set_framebuffer(xfb: *mut u32, stride_bytes: u32) {
     let tfbb = phys >> 5;
     let bfbb = (phys + stride_bytes) >> 5;
 
-    let regs = &*VI_REGS;
+    let regs = &*VI_REGS.get();
 
     // TFBL: top field base address
     // reg[14] = flag(1) | xof(4) | addr_hi(8)   — flag=0 for <32MB, xof=0
@@ -188,7 +188,7 @@ pub unsafe fn flush() {
 // ──────────────────────────────────────────────────────────────────────────────
 
 unsafe fn configure(mode: &VideoMode, timing: &Timing) {
-    let regs = &*VI_REGS;
+    let regs = &*VI_REGS.get();
 
     // Reset the VI
     regs.write(1, 0x0002);

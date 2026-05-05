@@ -69,8 +69,8 @@ impl BlockDevice for SdCard {
     fn sector_count(&self) -> u64 { self.sectors() as u64 }
 
     fn read(&self, lba: u64, buf: &mut [u8]) -> Result<(), BlockError> {
-        let arr: &mut [u8; 512] = buf[..512].try_into()
-            .map_err(|_| BlockError::BadAddress)?;
+        let arr: &mut [u8; 512] =
+            unsafe { &mut *(buf[..512].as_mut_ptr() as *mut [u8; 512]) };
         unsafe {
             self.read_sector(lba as u32, arr)
                 .map_err(|_| BlockError::IoError)
@@ -95,8 +95,8 @@ impl BlockDevice for MemCard {
     fn sector_count(&self) -> u64 { self.total_bytes as u64 / 512 }
 
     fn read(&self, lba: u64, buf: &mut [u8]) -> Result<(), BlockError> {
-        let arr: &mut [u8; 512] = buf[..512].try_into()
-            .map_err(|_| BlockError::BadAddress)?;
+        let arr: &mut [u8; 512] =
+            unsafe { &mut *(buf[..512].as_mut_ptr() as *mut [u8; 512]) };
         let addr = (lba * 512) as u32;
         unsafe {
             self.read_segment(addr, arr)

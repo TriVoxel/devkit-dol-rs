@@ -119,7 +119,7 @@ pub const IDENTITY: Mtx34 = [
 /// `pnidx` * 3 + 0x0000 = XF address for that slot.
 pub unsafe fn load_pos_mtx_imm(mt: &Mtx34, pnidx: u32) {
     // 12 floats = 12 XF registers starting at (pnidx << 2)
-    wp::load_xf_regs(((pnidx << 2) as u16), 12);
+    wp::load_xf_regs((pnidx << 2) as u16, 12);
     // Write 3 rows × 4 floats = 12 f32 values
     for row in mt {
         for &v in row {

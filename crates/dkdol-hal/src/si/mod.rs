@@ -139,6 +139,7 @@ impl DeviceKind {
 
 /// Standard GC button bitmask constants.
 #[allow(non_upper_case_globals)]
+#[allow(non_snake_case)]
 pub mod Buttons {
     pub const DLeft:  u16 = 0x0001;
     pub const DRight: u16 = 0x0002;
@@ -156,6 +157,7 @@ pub mod Buttons {
 
 /// Six extra digital buttons on modern controllers (BlueRetro extended mode).
 #[allow(non_upper_case_globals)]
+#[allow(non_snake_case)]
 pub mod ExtButtons {
     /// Left stick click (LS / L3).
     pub const StickL:  u8 = 0x01;
@@ -173,6 +175,7 @@ pub mod ExtButtons {
 
 /// Raw WiiMote button bitmask constants.
 #[allow(non_upper_case_globals)]
+#[allow(non_snake_case)]
 pub mod WiiButtons {
     pub const DLeft:  u16 = 0x0001;
     pub const DRight: u16 = 0x0002;
@@ -195,6 +198,7 @@ pub mod WiiButtons {
 }
 
 /// WiiMote extension attachment type constants (used in `WiimoteState::extension`).
+#[allow(non_snake_case, non_upper_case_globals)]
 pub mod WiiExtension {
     pub const None:     u8 = 0x00;
     pub const Nunchuck: u8 = 0x01;
@@ -205,6 +209,7 @@ pub mod WiiExtension {
 }
 
 /// HID USB keyboard usage IDs (usage page 0x07).
+#[allow(non_snake_case)]
 pub mod Key {
     pub const A: u8 = 0x04; pub const B: u8 = 0x05; pub const C: u8 = 0x06;
     pub const D: u8 = 0x07; pub const E: u8 = 0x08; pub const F: u8 = 0x09;
@@ -246,7 +251,7 @@ pub mod Key {
 // ─── State structs ────────────────────────────────────────────────────────────
 
 /// Standard GC controller state.
-#[derive(Debug, Clone, Copy, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct PadState {
     pub buttons:   u16,
     pub stick_x:   u8,

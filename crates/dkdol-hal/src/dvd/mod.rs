@@ -225,14 +225,14 @@ pub unsafe fn read_disc_id() -> Result<DiscId> {
     core::ptr::write_volatile(di(REG_DICMD0), 0xA800_0040); // READ_DISKID
     core::ptr::write_volatile(di(REG_DICMD1), 0);
     core::ptr::write_volatile(di(REG_DICMD2), 32);
-    let phys = (ID_BUF.0.as_ptr() as usize) & 0x1FFF_FFFF;
+    let phys = (core::ptr::addr_of!(ID_BUF) as usize) & 0x1FFF_FFFF;
     core::ptr::write_volatile(di(REG_DIMAR), phys as u32);
     core::ptr::write_volatile(di(REG_DILENGTH), 32);
     core::ptr::write_volatile(di(REG_DICR), DICR_DMA | DICR_START);
 
     wait_ready()?;
 
-    Ok(*(ID_BUF.0.as_ptr() as *const DiscId))
+    Ok(*(core::ptr::addr_of!(ID_BUF) as *const DiscId))
 }
 
 /// Seek to a disc offset (non-blocking).

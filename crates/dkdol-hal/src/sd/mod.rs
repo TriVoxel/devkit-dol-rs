@@ -319,8 +319,9 @@ impl SdCard {
         if !self.initialized { return Err(SdError::NoCard); }
         if buf.len() < (count as usize) * 512 { return Err(SdError::OutOfRange); }
         for i in 0..count {
-            let sector_buf: &mut [u8; 512] = buf[i as usize * 512..][..512].try_into()
-                .map_err(|_| SdError::OutOfRange)?;
+            let offset = i as usize * 512;
+            let sector_buf: &mut [u8; 512] =
+                unsafe { &mut *(buf[offset..offset+512].as_mut_ptr() as *mut [u8; 512]) };
             self.read_sector(start + i, sector_buf)?;
         }
         Ok(())

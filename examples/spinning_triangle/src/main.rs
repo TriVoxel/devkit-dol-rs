@@ -42,7 +42,6 @@ static mut FIFO: FifoBuf = FifoBuf([0; 256 * 1024]);
 
 /// External framebuffer — two buffers for double-buffering.
 /// 640×480 × 2 bytes (YCbCr 4:2:2) = 614,400 bytes each.
-const XFB_SIZE: usize = 640 * 480 * 2;
 const XFB_WORDS: usize = 640 * 480 / 2; // u32 pairs
 
 #[repr(C, align(32))]
@@ -61,8 +60,8 @@ unsafe fn run() -> ! {
     // ── 1. Video Interface: NTSC 480i ─────────────────────────────────────
     vi::init_ntsc_480i();
 
-    let xfb0_ptr = XFB0.0.as_mut_ptr() as *mut u32;
-    let xfb1_ptr = XFB1.0.as_mut_ptr() as *mut u32;
+    let xfb0_ptr = core::ptr::addr_of_mut!(XFB0.0) as *mut u32;
+    let xfb1_ptr = core::ptr::addr_of_mut!(XFB1.0) as *mut u32;
 
     // Physical addresses for EFB→XFB copy (strip cached address offset)
     let xfb0_phys = (xfb0_ptr as usize & 0x1FFF_FFFF) as u32;
@@ -73,7 +72,7 @@ unsafe fn run() -> ! {
     vi::flush();
 
     // ── 2. GX init ────────────────────────────────────────────────────────
-    gx::init(FIFO.0.as_mut_ptr(), FIFO.0.len());
+    gx::init(core::ptr::addr_of_mut!(FIFO.0) as *mut u8, 256 * 1024);
 
     // ── 3. Vertex format: position XYZ f32 + color RGBA8 ─────────────────
     state::set_vtx_desc_pos_clr0();

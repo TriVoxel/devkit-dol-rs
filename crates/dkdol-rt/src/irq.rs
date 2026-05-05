@@ -30,14 +30,14 @@ pub struct IrqState(u32);
 #[inline(always)]
 pub fn disable() -> IrqState {
     let msr: u32;
-    let new_msr: u32;
+    let _new_msr: u32;
     unsafe {
         asm!(
             "mfmsr {msr}",
             "rlwinm {new}, {msr}, 0, 17, 15",   // clear bit 16 (EE)
             "mtmsr {new}",
             msr = out(reg) msr,
-            new = out(reg) new_msr,
+            new = out(reg) _new_msr,
             options(nostack, preserves_flags)
         );
     }
@@ -68,13 +68,17 @@ pub unsafe fn restore(state: IrqState) {
 /// will cause undefined behaviour if any interrupt fires.
 #[inline(always)]
 pub unsafe fn enable() {
+    // Use a constraint-allocated register rather than hard-coding r3,
+    // and use the r-prefix form for LLVM's PowerPC assembler.
+    let mut msr: u32;
     asm!(
-        "mfmsr 3",
-        "ori   3, 3, 0x8000",
-        "mtmsr 3",
-        out("r3") _,
+        "mfmsr {msr}",
+        "ori   {msr}, {msr}, 0x8000",
+        "mtmsr {msr}",
+        msr = out(reg) msr,
         options(nostack, preserves_flags)
     );
+    let _ = msr;
 }
 
 /// Execute `f` with external interrupts disabled, then restore the previous

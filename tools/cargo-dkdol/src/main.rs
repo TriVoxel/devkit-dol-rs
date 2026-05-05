@@ -30,7 +30,7 @@
 
 use std::env;
 use std::fs;
-use std::io::{self, Read};
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{self, Command, ExitStatus};
 
@@ -39,11 +39,12 @@ use std::process::{self, Command, ExitStatus};
 fn main() {
     let all_args: Vec<String> = env::args().collect();
 
-    // When invoked as `cargo dkdol <subcmd>`, Cargo inserts "dkdol" at index 1.
-    let rest = if all_args.get(1).map(|s| s.as_str()) == Some("gc") {
-        &all_args[2..]
-    } else {
-        &all_args[1..]
+    // When invoked as `cargo dkdol <subcmd>`, Cargo passes the binary name
+    // at index 0 and inserts the subcommand name ("dkdol") at index 1.
+    // Strip it so `rest[0]` is always the actual subcommand.
+    let rest = match all_args.get(1).map(|s| s.as_str()) {
+        Some("dkdol") | Some("gc") => &all_args[2..],
+        _ => &all_args[1..],
     };
 
     let subcmd = rest.first().map(|s| s.as_str()).unwrap_or("help");
@@ -183,8 +184,10 @@ fn run_cargo_build(root: &Path, tgt: &str, b: &BuildArgs) -> Result<ExitStatus, 
        .arg("-Z").arg("json-target-spec")
        .arg("--target").arg(tgt);
     if b.release { cmd.arg("--release"); }
+    // Examples in this workspace are standalone packages, not [[example]]
+    // targets, so --example <name> maps to -p <name>.
     if let Some(p) = &b.package { cmd.arg("-p").arg(p); }
-    if let Some(e) = &b.example { cmd.arg("--example").arg(e); }
+    else if let Some(e) = &b.example { cmd.arg("-p").arg(e); }
     for x in &b.extra { cmd.arg(x); }
     cmd.status().map_err(|e| { eprintln!("cargo-dkdol: cannot run cargo: {}", e); 2 })
 }
@@ -194,7 +197,10 @@ fn locate_elf(root: &Path, tgt: &str, prof: &str, b: &BuildArgs) -> Result<PathB
         .and_then(|s| s.to_str()).unwrap_or(tgt);
     let base = root.join("target").join(tgt_dir).join(prof);
 
+    // Resolve example name as a package name (workspace member)
+    let pkg_name = b.package.as_deref().or(b.example.as_deref());
     if let Some(ex) = &b.example {
+        // Also check legacy examples/ subdir layout just in case
         let p = base.join("examples").join(ex);
         if p.exists() && is_elf(&p) { return Ok(p); }
     }

@@ -24,7 +24,11 @@ pub struct ViRegs {
 ///
 /// In Rust, `volatile` access is modelled by using `core::ptr::write_volatile` /
 /// `read_volatile`. The `ViRegs::write` / `read` methods wrap these.
-pub static VI_REGS: *mut ViRegs = VI_BASE as *mut ViRegs;
+/// Sync wrapper for a raw hardware pointer. Safe on bare-metal single-core.
+pub struct SyncPtr<T>(*mut T);
+unsafe impl<T> Sync for SyncPtr<T> {}
+impl<T> SyncPtr<T> { #[inline] pub fn get(&self) -> *mut T { self.0 } }
+pub static VI_REGS: SyncPtr<ViRegs> = SyncPtr(VI_BASE as *mut ViRegs);
 
 impl ViRegs {
     /// Read VI register `n` with a volatile load.
@@ -46,6 +50,6 @@ impl ViRegs {
     #[inline(always)]
     pub unsafe fn write(&self, n: usize, val: u16) {
         debug_assert!(n < VI_REG_COUNT);
-        core::ptr::write_volatile(&self.regs[n] as *const u16 as *mut u16, val);
+        core::ptr::write_volatile(core::ptr::addr_of!(self.regs[n]) as *mut u16, val);
     }
 }
