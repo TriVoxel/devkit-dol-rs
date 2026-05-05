@@ -12,11 +12,6 @@ license.workspace    = true
 
 [features]
 default = []
-# Enable Wii-specific boot sequence (Broadway CPU, MEM2 mapping, etc.)
-wii = []
-
-[features]
-default = []
 # Enable Wii (Broadway) hardware differences: 0xCD MMIO prefix,
 # MEM2 support, different BAT layout.
 wii = []

@@ -12,7 +12,3 @@ dkdol-rt = { path = "../dkdol-rt" }
 [features]
 default = []
 wii = ["dkdol-rt/wii"]
-
-[features]
-default = []
-wii = ["dkdol-rt/wii"]

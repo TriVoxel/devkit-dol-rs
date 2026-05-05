@@ -15,6 +15,7 @@
 //! | `storage` | Unified `BlockDevice` + scanner     | ✅ All devices      |
 //! | `mmio`    | MMIO base address (GC/Wii)          | ✅ Feature flag     |
 //! | `mem2`    | Wii MEM2 extended RAM constants     | ✅ `wii` feature    |
+//! | `ios`     | IOS IPC: WPAD + USB HID (Wii only)  | ✅ `wii` feature    |
 //!
 //! ## Features
 //!
@@ -34,6 +35,7 @@ pub mod dvd;
 pub mod exi;
 pub mod gx;
 pub mod mem2;
+#[cfg(feature = "wii")] pub mod ios;
 pub mod memcard;
 pub mod mmio;
 pub mod pi;

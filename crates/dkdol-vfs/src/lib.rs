@@ -51,6 +51,9 @@
 
 #![no_std]
 
+#[cfg(feature = "wii")]
+mod wii;
+
 pub mod hid;
 
 // ─── Re-exports used by callers ───────────────────────────────────────────────
@@ -542,6 +545,11 @@ static mut FD_TABLE: [VfsFile; MAX_FD] = {
 };
 
 /// `dkdol_rt` tick at last [`poll`] call per device kind.
+/// On Wii, tracks whether each port has an IOS-backed device
+/// (Wiimote or USB HID) independent of the SI bus.
+#[cfg(feature = "wii")]
+static mut WII_PRESENT: [bool; 4] = [false; 4];
+
 /// Cached device kind per controller port — refreshed by `poll()`.
 /// Avoids calling `identify()` on every `read()`.
 static mut PORT_KINDS: [DeviceKind; 4] = [
@@ -1146,6 +1154,10 @@ pub unsafe fn init() {
 /// Like [`init`] but specifies the mount options used for lazy-mounts.
 pub unsafe fn init_with_opts(opts: MountOptions) {
     DEFAULT_OPTS = opts;
+
+    // ── Wii-native backends (IOS Bluetooth + USB) ──────────────
+    #[cfg(feature = "wii")]
+    unsafe { wii::init(); }
 
     // ── Fixed device nodes (HID + pseudo-devices — always present) ────────
     let fixed: &[(&str, DevKind, bool)] = &[

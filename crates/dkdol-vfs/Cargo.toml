@@ -28,4 +28,7 @@ all-fs  = ["fat", "ext2", "iso9660", "dvd", "memcard"]
 # Gate filesystem-only source with #[cfg(feature = "_fs")].
 _fs = []
 
-wii = ["dkdol-hal/wii", "dkdol-rt/wii"]
+# Enables Wii-native backends: IOS Bluetooth (Wiimote) and USB HID
+# (keyboard/mouse via rear USB ports). When enabled, the same
+# /dev/hid/pN/ paths work on Wii without any game code changes.
+wii = ["dep:dkdol-fs", "dkdol-hal/wii", "dkdol-rt/wii"]

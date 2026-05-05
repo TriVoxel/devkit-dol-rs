@@ -180,6 +180,7 @@ fn run_cargo_build(root: &Path, tgt: &str, b: &BuildArgs) -> Result<ExitStatus, 
        .arg("+nightly").arg("build")
        .arg("-Z").arg("build-std=core,compiler_builtins")
        .arg("-Z").arg("build-std-features=compiler-builtins-mem")
+       .arg("-Z").arg("json-target-spec")
        .arg("--target").arg(tgt);
     if b.release { cmd.arg("--release"); }
     if let Some(p) = &b.package { cmd.arg("-p").arg(p); }
@@ -495,6 +496,7 @@ Runs:
     cargo +nightly build \\
         -Z build-std=core,compiler_builtins \\
         -Z build-std-features=compiler-builtins-mem \\
+  -Z json-target-spec \\
         --target targets/powerpc-gekko-eabi.json \\
         [--release] [-p P] [--example E]
 
